@@ -15,7 +15,11 @@ namespace Catalyst.Api.Controllers
 		[HttpGet("")]
 		public object GetEnvironment()
 		{
-			return new { _settings.EnvironmentSettings.BuildNumber };
+			return new {
+				_settings.EnvironmentSettings.BuildNumber,
+				_settings.OrderCloudSettings.ApiUrl,
+				_settings.OrderCloudSettings.MiddlewareClientID,
+			};
 		}
 	}
 }

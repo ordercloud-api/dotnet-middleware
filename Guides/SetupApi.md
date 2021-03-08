@@ -24,16 +24,17 @@ Get this code into your own version control system.
 Your middleware API will need stored settings such as Ordercloud API Client credentials. We recommend storing them in Azure App Configuration. Then you can access one group of settings for hosted apps and local debugging. Follow these steps.
 - Create a new Azure resource of type [App Configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview).
 - In the Configuration Explorer tab of the new resource, add your settings. Make sure the keys match the name of your fields in [AppSettings.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/AppSettings.cs). Field nesting is represented with a colon. For example, the field `settings.OrderCloudSettings.ClientSecret` would have key `OrderCloudSettings:ClientSecret`.
-- Once all settings are added, copy the connection string from your azure resource. This is found in the Access Keys tab. 
-- Open the project in Visual Studio 2019 and add the connection string as an environment variable in a new debug profile. Do this by right clicking the WebApi project and go to Properties > Debug > New > Environment Variables. Use `APP_CONFIG_CONNECTION` as the key.
+- Copy the connection string from your azure resource. This is found in the Access Keys tab. 
 
 Repeat these steps, starting with creating a new App Configuration resource in Azure, for each of your environments (e.g. Test, Stage, Prod).
 
 ### Confirm API runs locally 
 
-In Visual Studio 2019, select the project Catalyst.Api, and select the new debug profile you created with the connection string. Click the green arrow.
+Open the project in Visual Studio 2019 and add the connection string as an environment variable in a new debug profile. Do this by right clicking the WebApi project and go to Properties > Debug > New > Environment Variables. Use `APP_CONFIG_CONNECTION` as the key.
 
-![Alt text](./run_in_vs_2019.png "Run API project locally")
+![Alt text](./local_debug_profile.png "Add settings connection locally")
+
+In Visual Studio 2019, select the project Catalyst.Api, and select the new debug profile ("Staging" in the image) you created with the connection string. Click the green arrow.
 
  https://localhost:5000 should pop up in your browser with route documentation for the starter API. Make a GET request to https://localhost:5000/api/env and you should see some of the settings you created in Azure. 
 
