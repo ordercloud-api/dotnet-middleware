@@ -5,7 +5,7 @@ Example middleware patterns for [Ordercloud](https://ordercloud.io/) using the [
 
 Learn how to stand up a hosted middleware API from scratch.
 
-[Guide Here](.Guides/SetupApi.md)
+[Guide Here](./Guides/SetupApi.md)
 
 ## Checkout Integrations for Commerce 
  
