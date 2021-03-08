@@ -1,0 +1,21 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using OrderCloud.Catalyst;
+
+namespace Catalyst.Api.Controllers
+{
+	[Route("api/env")]
+	public class EnvController : BaseController
+	{
+		private readonly AppSettings _settings;
+		public EnvController(AppSettings settings)
+		{
+			_settings = settings;
+		}
+
+		[HttpGet("")]
+		public object GetEnvironment()
+		{
+			return new { _settings.EnvironmentSettings.BuildNumber };
+		}
+	}
+}
