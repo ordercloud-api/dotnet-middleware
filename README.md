@@ -11,7 +11,7 @@ Learn how to plug in your preferred shipping, tax, and payment processing partne
 
 Comming soon ... 
 
-### Import Data
+### Import Product Data
 
 Learn how to import a product catalog to Ordercloud and keep it in sync with updates.
 
