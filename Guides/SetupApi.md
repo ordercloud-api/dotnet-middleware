@@ -1,8 +1,8 @@
-# Start an API from Scratch
+# Start an API from scratch
 
 ### What is this guide?
 
-This guide provides step by step-by-step instructions to stand up a hosted middleware API using a specific technology stack. It is intended for readers with a developer background, but who may not be familiar with these specific tools. 
+This guide provides step-by-step instructions to stand up a hosted middleware API using a specific technology stack. It is intended for readers with a developer background, but who may not be familiar with these specific tools. 
 - [Microsoft Azure](https://docs.microsoft.com/en-us/azure/guides/developer/azure-developer-guide) for cloud hosting, 
 - [.NET Core 3.1](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-3.1) for development framework
 - Ordercloud [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) to accelerate Ordercloud-specific features. 
