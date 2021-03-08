@@ -10,25 +10,20 @@ This guide provides step by step-by-step instructions to stand up a hosted middl
 
 ### Setting up Accounts
 
-Before beginning you will need an Ordercloud account and an Azure account. You should register for Ordercloud and register for Azure before continuing. You will also need these free tools installed on your local machine - the .NET Framework with .NET Core 3.1 included and Visual Studio 2019.
+Before beginning you will need an [Ordercloud account](https://portal.ordercloud.io/register) and an [Azure account](https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go). You should register for both before continuing. You will also need these free tools installed on your local machine - the .NET Framework, the .NET Core 3.1 runtime and Visual Studio 2019.
 
-https://portal.ordercloud.io/register
-
-https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go
 
 ### Get Code 
 
-Pull down the code in this dotnet-catalyst-examples repository. 
+Pull down the code in this dotnet-catalyst-examples repository. `git clone https://github.com/ordercloud-api/dotnet-catalyst-examples`
 
-`git clone https://github.com/ordercloud-api/dotnet-catalyst-examples`
-
- Get this project in your own version control system.
+Get this code into your own version control system.
 
 ### Put app settings in Azure App Config
 
-Your middleware API will need stored settings including Ordercloud API Client credentials and account credentials for any other integrations. We recommend storing them in Azure App Configuration. Then you can access one group of settings for hosted apps and local debugging. Follow these steps.
+Your middleware API will need stored settings such as Ordercloud API Client credentials. We recommend storing them in Azure App Configuration. Then you can access one group of settings for hosted apps and local debugging. Follow these steps.
 - Create a new Azure resource of type [App Configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview).
-- In the Configuration Explorer tab of the new resource, add your settings. Make sure the keys match the name of your fields in [AppSettings.cs](). Field nesting is represented with a colon. For example, the field `settings.OrderCloudSettings.ClientSecret` would have key `OrderCloudSettings:ClientSecret`.
+- In the Configuration Explorer tab of the new resource, add your settings. Make sure the keys match the name of your fields in [AppSettings.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/AppSettings.cs). Field nesting is represented with a colon. For example, the field `settings.OrderCloudSettings.ClientSecret` would have key `OrderCloudSettings:ClientSecret`.
 - Once all settings are added, copy the connection string from your azure resource. This is found in the Access Keys tab. 
 - Open the project in Visual Studio 2019 and add the connection string as an environment variable in a new debug profile. Do this by right clicking the WebApi project and go to Properties > Debug > New > Environment Variables. Use `APP_CONFIG_CONNECTION` as the key.
 
@@ -50,7 +45,6 @@ You will need to create a new App Service resource in azure. Then add an app set
 Azure Devops is our recommended approach. This project includes a deploy.yaml (link to come) file that specifies an Azure Devops build and release pipeline. Modify that file with your Azure App Service name and push those changes to the banch you want to deploy off. Then, in Azure Devops create new build pipeline. Specify your git repository and Azure Devops should find deploy.yaml and handle the pipeline set up.
 
 ![Alt text](./where_is_your_code.png "New Azure devops Pipeline")
-
 
 
 Manually trigger a build and then a release on your new pipeline. After both have completed, you shoud have a working hosted API! Navigate to the url specified on the App Service overview tab to confirm. You should see the same behavior you saw locally. 
