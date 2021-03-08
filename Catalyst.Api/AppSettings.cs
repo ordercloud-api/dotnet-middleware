@@ -15,7 +15,7 @@
 
 	public class EnvironmentSettings
 	{
-		public string Env { get; set; } // typicall "test", "qa", "stage", "prod", ect
+		public string Env { get; set; } // typically "test", "qa", "stage", "prod", ect
 		public string BuildNumber { get; set; }
 	}
 
