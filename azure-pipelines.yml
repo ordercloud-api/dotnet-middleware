@@ -5,11 +5,11 @@ resources:
       ref: development
 variables: 
   - name: APP_SERVICE_NAME
-  value: put-your-name-here
+    value: put-your-name-here
   - name: SOLUTION_FILE_PATH
-  value: ./Catalyst.Examples.sln
+    value: ./Catalyst.Examples.sln
   - name: API_PROJECT_NAME
-  value: Catalyst.Api.csproj
+    value: Catalyst.Api.csproj
 jobs:
   - job: Build_MiddleWare
     pool:
