@@ -1,0 +1,66 @@
+resources:
+  repositories:
+    - repository: self
+      type: git
+      ref: development
+variables: 
+  - name: APP_SERVICE_NAME
+  value: put-your-name-here
+  - name: SOLUTION_FILE_PATH
+  value: ./Catalyst.Examples.sln
+  - name: API_PROJECT_NAME
+  value: Catalyst.Api.csproj
+jobs:
+  - job: Build_MiddleWare
+    pool:
+      vmImage: windows-2019
+    displayName: Build Middleware
+    steps:
+      - checkout: self
+      - task: PowerShell@2
+        displayName: Get Build Number
+        inputs:
+          targetType: inline
+          script: >-
+            try {
+                # call out to hosted endpoint to get the current version and add one for this build
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $response = Invoke-RestMethod -Uri "https://$(APP_SERVICE_NAME).azurewebsites.net/api/env"
+                $newversion = [int]$response.BuildNumber.Split(".")[2] + 1
+            Write-Host "##vso[build.updatebuildnumber]1.0.$newversion.$(Build.BuildId)"
+            } catch {
+                $newversion = 1
+                Write-Host "##vso[build.updatebuildnumber]1.0.$newversion.$(Build.BuildId)"
+            }
+      - task: NuGetToolInstaller@1
+        displayName: "Use NuGet "
+      - task: NuGetCommand@2
+        displayName: NuGet restore
+      - task: VSBuild@1
+        displayName: Build solution $(SOLUTION_FILE_PATH)
+        inputs:
+          solution: $(SOLUTION_FILE_PATH)
+      - task: VSTest@2
+        displayName: Run C# Unit tests
+        inputs:
+          testAssemblyVer2: >-
+            **\*.tests.dll
+            !**\obj\**
+      - task: DotNetCoreCLI@2
+        displayName: Build Middleware
+        inputs:
+          projects: "**/$(API_PROJECT_NAME)"
+          arguments: --configuration Release
+      - task: DotNetCoreCLI@2
+        displayName: Publish Middleware
+        inputs:
+          command: publish
+          publishWebProjects: false
+          projects: "**/$(API_PROJECT_NAME)"
+          arguments: --configuration Release --output middleware
+          zipAfterPublish: false
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact: Middleware"
+        inputs:
+          PathtoPublish: middleware
+          ArtifactName: middleware

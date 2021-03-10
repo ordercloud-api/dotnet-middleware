@@ -16,7 +16,7 @@
 	public class EnvironmentSettings
 	{
 		public string Env { get; set; } // typically "test", "qa", "stage", "prod", ect
-		public string BuildNumber { get; set; }
+		public string BuildNumber { get; set; } // Used in the build steps azure-pipeline.yaml
 	}
 
 	public class OrderCloudSettings
