@@ -39,7 +39,7 @@ Open the project in Visual Studio 2019 and add the connection string as an envir
 
 In Visual Studio 2019, select the project Catalyst.Api, and select the new debug profile ("Staging" in the image) you created with the connection string. Click the green arrow.
 
- https://localhost:5000 should pop up in your browser with route documentation for the starter API. Make a GET request to https://localhost:5000/api/env and you should see some of the settings you created in Azure. 
+ https://localhost:5001 should pop up in your browser with route documentation for the starter API. Make a GET request to https://localhost:5001/api/env and you should see some of the settings you created in Azure. 
 
 
 ### Publish API to Azure App Service 
