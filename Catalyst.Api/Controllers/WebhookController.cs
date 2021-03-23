@@ -22,7 +22,7 @@ namespace Catalyst.Api.Controllers
 
 		// This example sends a text to purchasers after their orders have been approved.
 		// In ordercloud, configure a post-webhook on the order approve action.
-		[HttpPost("api/webhook/saveaddress")] // Supply this route as the listener.  
+		[HttpPost("api/webhook/orderapproved")] // Supply this route as the listener.  
 		[OrderCloudWebhookAuth] // This security feature blocks requests that are not from Ordercloud. Make sure settings.OrderCloudSettings.WebhookHashKey matches whats configured in O.C.  
 		// A post webhook lister needs no return type.
 		public async Task HandleOrderApprove([FromBody] WebhookPayloads.Orders.Approve payload)
