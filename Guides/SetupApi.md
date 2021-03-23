@@ -7,6 +7,9 @@ This guide provides step-by-step instructions to stand up a hosted middleware AP
 - [.NET Core 3.1](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-3.1) for development framework
 - Ordercloud [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) to accelerate Ordercloud-specific features. 
 
+### Why do I need middleware? 
+
+Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware. 
 
 ### Setting up Accounts
 
@@ -23,7 +26,7 @@ Get this code into your own version control system.
 
 Your middleware API will need stored settings such as Ordercloud API Client credentials. We recommend storing them in Azure App Configuration. Then you can access one group of settings for hosted apps and local debugging. Follow these steps.
 - Create a new Azure resource of type [App Configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview).
-- In the Configuration Explorer tab of the new resource, add your settings. Make sure the keys match the name of your fields in [AppSettings.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/AppSettings.cs). Field nesting is represented with a colon. For example, the field `settings.OrderCloudSettings.ClientSecret` would have key `OrderCloudSettings:ClientSecret`.
+- In the Configuration Explorer tab of the new resource, add your settings. Make sure to look at [AppSettings.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/AppSettings.cs) and create keys that match these fields. Field nesting is represented with a colon. For example, the field `settings.OrderCloudSettings.ApiUrl` would have key `OrderCloudSettings:ApiUrl`.
 - Copy the connection string from your azure resource. This is found in the Access Keys tab. 
 
 Repeat these steps, starting with creating a new App Configuration resource in Azure, for each of your environments (e.g. Test, Stage, Prod).
@@ -36,16 +39,16 @@ Open the project in Visual Studio 2019 and add the connection string as an envir
 
 In Visual Studio 2019, select the project Catalyst.Api, and select the new debug profile ("Staging" in the image) you created with the connection string. Click the green arrow.
 
- https://localhost:5000 should pop up in your browser with route documentation for the starter API. Make a GET request to https://localhost:5000/api/env and you should see some of the settings you created in Azure. 
+ https://localhost:5001 should pop up in your browser with route documentation for the starter API. Make a GET request to https://localhost:5001/api/env and you should see some of the settings you created in Azure. 
 
 
 ### Publish API to Azure App Service 
 
 You will need to create a new App Service resource in azure. Then add an app setting for `APP_CONFIG_CONNECTION` in the Configuration tab the same way you did locally in Visual Studio. Once that is done, you're ready to deploy code. Deploying is its own devops discipline. For the quick and dirty purpose of getting started you can [deploy directly from Visual Studio](https://docs.microsoft.com/en-us/aspnet/core/tutorials/publish-to-azure-webapp-using-vs?view=aspnetcore-5.0). However, a CI/CD deployment tool like [Azure Devops](https://azure.microsoft.com/en-us/services/devops) can greatly improve your deploy processes. 
 
-Azure Devops is our recommended approach. This project includes a deploy.yaml (link to come) file that specifies an Azure Devops build and release pipeline. Modify that file with your Azure App Service name and push those changes to the banch you want to deploy off. Then, in Azure Devops create new build pipeline. Specify your git repository and Azure Devops should find deploy.yaml and handle the pipeline set up.
+Azure Devops is our recommended approach. This project includes an [azure-pipelines.yml](../azure-pipelines.yml) config that specifies an Azure Devops build pipeline. For more info on these configs, see [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema). Modify line 8 of azure-pipelines.yml with your Azure App Service name and push that changes to the banch you want to deploy off. Then, in Azure Devops create new build pipeline. Specify your git repository and Azure Devops will set up the pipeline. 
 
 ![Alt text](./where_is_your_code.png "New Azure devops Pipeline")
 
 
-Manually trigger a build and then a release on your new pipeline. After both have completed, you shoud have a working hosted API! Navigate to the url specified on the App Service overview tab to confirm. You should see the same behavior you saw locally. 
+Manually trigger build and then a release on your new pipeline. After both have completed, you shoud have a working hosted API! Navigate to the url specified on the App Service overview tab to confirm. You should see the same behavior you saw locally. 
