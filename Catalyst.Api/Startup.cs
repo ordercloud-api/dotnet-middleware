@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrderCloud.SDK;
 using Microsoft.OpenApi.Models;
-using Catalyst.Api.Services;
+using Catalyst.Api.Commands;
 
 namespace Catalyst.Api
 {
@@ -29,6 +29,7 @@ namespace Catalyst.Api
 					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
+				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cataylst Test API", Version = "v1" });
@@ -37,7 +38,7 @@ namespace Catalyst.Api
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-			CatalystApplicationBuilder.CreateApplicationBuilder(app, env)
+			CatalystApplicationBuilder.DefaultCatalystAppBuilder(app, env)
 				.UseSwagger()
 				.UseSwaggerUI(c =>
 				{
