@@ -2,7 +2,7 @@ resources:
   repositories:
     - repository: self
       type: git
-      ref: development
+      ref: dev
 variables: 
   - name: APP_SERVICE_NAME
     value: put-your-name-here
