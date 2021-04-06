@@ -1,4 +1,4 @@
-﻿namespace Catalyst.Api
+﻿namespace Catalyst.Common
 {
 	public class AppSettings
 	{

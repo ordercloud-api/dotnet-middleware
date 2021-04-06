@@ -1,11 +1,11 @@
-﻿using Catalyst.Api.Controllers;
-using OrderCloud.SDK;
+﻿using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Catalyst.Api.Commands
+namespace Catalyst.Common.Commands
+
 {
 	public interface ICheckoutIntegrationCommand
 	{
@@ -68,6 +68,12 @@ namespace Catalyst.Api.Commands
 				}
 			};
 		}
+	}
+
+	// Data configured in OrderCloud to be passed to all Checkout Integration Events as Payload.ConfigData
+	public class CheckoutConfig
+	{
+		public string MyProperty { get; set; }
 	}
 
 

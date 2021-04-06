@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrderCloud.SDK;
 using Microsoft.OpenApi.Models;
-using Catalyst.Api.Commands;
+using Catalyst.Common;
+using Catalyst.Common.Commands;
 
 namespace Catalyst.Api
 {
@@ -20,7 +21,7 @@ namespace Catalyst.Api
 		public virtual void ConfigureServices(IServiceCollection services) {
 			services
 				.ConfigureServices()
-				.AddOrderCloudUserAuth<AppSettings>()
+				.AddOrderCloudUserAuth()
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {

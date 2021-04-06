@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using OrderCloud.Catalyst;
 using StackExchange.Redis;
 
-namespace Catalyst.Api.Controllers
+namespace Catalyst.Common.Services
 {
 	// Redis (https://redis.io/) is a distributed in-memory database used for many things, including caching.  
 	// You can host a Redis DB in Azure https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-dotnet-core-quickstart. 
