@@ -1,29 +1,12 @@
-﻿# Getting Started
+﻿# Adding Settings Locally
 1. Open the Headstart.sln in Visual Studio
-2. Add a "local.settings.json" file at the room of Headstart.Jobs with the following content:
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "AzureWebJobsDashboard": "UseDevelopmentStorage=true"
-  },
-  "Host": {
-    "LocalHttpPort": 7071,
-    "CORS": "*",
-    "CORSCredentials": false
-  },
-  "ConnectionStrings": {
-
-  }
-}
-3. Right click on the Headstart.Jobs project and click on "Properties"
-4. Go to the "Debug" panel
-5. Create a new profile and call it "Test"
-6. Set Launch to Project
-7. Add a new Environment Variable called `APP_CONFIG_CONNECTION` and set the value to the connection string from your [azure app configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview)
-8. Save your profiles
-9. Repeat steps 5-7 for each of your environments.
+2. Right click on the Headstart.Functions project and click on "Properties"
+3. Go to the "Debug" panel
+4. Create a new profile and call it "Test"
+5. Set Launch to Project
+6. Add a new Environment Variable called `APP_CONFIG_CONNECTION` and set the value to the connection string from your [azure app configuration](https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview)
+7. Save your profiles
+8. Repeat steps 5-7 for each of your environments.
 Now you should be able to select each debug profile to run the project locally
 
 # Debugging locally
