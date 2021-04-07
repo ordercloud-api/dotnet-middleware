@@ -1,4 +1,5 @@
-﻿using Catalyst.Api.Commands;
+﻿using Catalyst.Common;
+using Catalyst.Common.Commands;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 using OrderCloud.SDK;
@@ -52,11 +53,5 @@ namespace Catalyst.Api.Controllers
 		{
 			return await _checkoutIntegrationCommand.HandleOrderReleased(payload);
 		}
-	}
-
-	// Data configured in OrderCloud to be passed to all Checkout Integration Events as Payload.ConfigData
-	public class CheckoutConfig
-	{
-		public string MyProperty { get; set; }
 	}
 }

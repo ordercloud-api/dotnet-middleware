@@ -1,3 +1,4 @@
+using Catalyst.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using OrderCloud.Catalyst;

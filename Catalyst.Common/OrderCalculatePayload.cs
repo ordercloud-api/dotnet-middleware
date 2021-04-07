@@ -1,6 +1,6 @@
 ﻿using OrderCloud.SDK;
 
-namespace Catalyst.Api
+namespace Catalyst.Common
 {
 	public class OrderCalculatePayload<TConfig>
 	{

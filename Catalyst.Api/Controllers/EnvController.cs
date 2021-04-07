@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Catalyst.Common;
+using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 
 namespace Catalyst.Api.Controllers
