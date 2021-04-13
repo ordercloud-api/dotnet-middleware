@@ -30,6 +30,7 @@ namespace Catalyst.Api
 					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
+				.AddScoped<VerifiedUserContext>()
 				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
 				 {

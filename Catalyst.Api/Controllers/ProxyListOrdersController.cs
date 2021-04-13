@@ -13,10 +13,12 @@ namespace Catalyst.Api.Controllers
 	public class ProxyListOrdersController : BaseController
 	{
 		private readonly IOrderCloudClient _oc;
+		private readonly VerifiedUserContext _user;
 
-		public ProxyListOrdersController(IOrderCloudClient oc)
+		public ProxyListOrdersController(IOrderCloudClient oc, VerifiedUserContext user)
 		{
 			_oc = oc;
+			_user = user;
 		}
 
 		// Users with the Shopper role can access this route. Typically, anyone purchasing products has this permission.
@@ -24,11 +26,12 @@ namespace Catalyst.Api.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<ListPage<Order>> ListOrdersForBillingAddress(IListArgs args)
 		{
-			if (UserContext.xp.FranchiseRole != "Owner")
+			var me = await _user.OcClient.Me.GetAsync();
+			if (me.xp.FranchiseRole != "Owner")
 			{
 				throw new UnAuthorizedException();
 			}
-			var locationID = UserContext.xp.BillingAddressID;
+			var locationID = me.xp.BillingAddressID;
 			var billingAddressFilter = new ListFilter("BillingAddress.ID", locationID);
 			// Add a filter on top of any user-defined filters. Only return orders where Order.BillingAddress.ID equals the user's.   
 			args.Filters.Add(billingAddressFilter);

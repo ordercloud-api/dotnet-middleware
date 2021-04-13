@@ -1,4 +1,5 @@
-﻿using OrderCloud.SDK;
+﻿using Catalyst.Api;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;

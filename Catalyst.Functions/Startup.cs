@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Catalyst.Common;
 using Microsoft.Extensions.Configuration;
+using OrderCloud.Catalyst;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Catalyst.WebJobs
@@ -28,23 +29,5 @@ namespace Catalyst.WebJobs
             builder.Services.AddSingleton(_settings);
             builder.Services.AddSingleton<IOrderCloudClient>(orderCloudClient);
         }
-    }
-
-    public static class FunctionHostBuilderExtensions
-	{
-        public static TSettings BuildSettingsFromAzureAppConfig<TSettings>(this IFunctionsHostBuilder host, string connectionString)
-           where TSettings : class, new()
-        {
-            var settings = new TSettings();
-
-            var config = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddAzureAppConfiguration(connectionString)
-                .Build();
-
-            config.Bind(settings);
-            return settings;
-        }
-    }
-              
+    }           
 }
