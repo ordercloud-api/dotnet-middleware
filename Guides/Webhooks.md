@@ -47,7 +47,7 @@ Now its time to configure OrderCloud to send webhook requests. Do this with the 
 {
 	"Name": "Create Address",
 	"Description": "",
-	"Url": "https://{ngrok-host}/api/webhook/createaddress", // using the ngrok-host provided by ngrok
+	"Url": "https://{ngrok-host}/api/webhook/createaddress", // using the ngrok-host provided by ngrok and the path from the code.
 	"HashKey": "{WebhookHashKey}", // matches _settings.OrderCloudSettings.WebhookHashKey exactly
 	"ElevatedRoles": null,
 	"ConfigData": [],
@@ -64,7 +64,7 @@ Now its time to configure OrderCloud to send webhook requests. Do this with the 
 {
 	"Name": "Order Approved",
 	"Description": "",
-	"Url": "https://{ngrok-host}/api/webhook/orderapproved", // using the ngrok-host provided by ngrok
+	"Url": "https://{ngrok-host}/api/webhook/orderapproved", // using the ngrok-host provided by ngrok and the path from the code.
 	"HashKey": "{WebhookHashKey}", // matches _settings.OrderCloudSettings.WebhookHashKey exactly
 	"ElevatedRoles": null,
 	"ConfigData": [],
@@ -79,6 +79,16 @@ Now its time to configure OrderCloud to send webhook requests. Do this with the 
 }
 ```
 
-Make sure you assign these webhook configs to ApiClientIDs. Requests made to the API with these ApiClientIDs will trigger webhooks. If your unsure, add all of them to the array.   
+Make sure you assign these webhook configs to ApiClientIDs. Requests made to the API with these ApiClientIDs will trigger webhooks. If your unsure, add all of them to the array.
+
+
+You are now ready to trigger your first webhook. Place a break point in HandleAddressCreate(). Through the OrderCloud API, attempt to create a buyer address. **Warning** - if you're doing this through the Portal UI, make sure you select a specific user context in the upper left hand corner. Requests in the Portal without a specific user context are not assosiated with an ApiClientID so will not trigger webhooks. As you try to create the address, your local break point should be hit! Now you can develop your custom logic.   
+
+For each additional webhook event you wish to listen to, create a route in your code and a matching webhook confige 
+
 
 ### Publish Webhook Listeners
+
+The final step is to deploy this logic. Continue the guide [Start an API from scratch](../SetupApi.md) to see steps for deploying your API. For webhooks, an important additional step is to update your configuration in OrderCloud. Make sure the `Url` property is changed from `https://{ngrok-host}/api/webhook/orderapproved` to `https://{my-hosted-site}/api/webhook/orderapproved`, for example. Do this for all your webhook configs. 
+
+Congratuations, you have set up OrderCloud webhooks!
