@@ -81,6 +81,9 @@ Now its time to configure OrderCloud to send webhook requests. Do this with the 
 
 Make sure you assign these webhook configs to ApiClientIDs. Requests made to the API with these ApiClientIDs will trigger webhooks. If your unsure, add all of them to the array.
 
+To see a list of all available webhook triggers, create a webhook config through the Portal UI.
+
+![Alt text](./webhook_triggers.png "See Webhook Triggers")
 
 You are now ready to trigger your first webhook. Place a break point in HandleAddressCreate(). Through the OrderCloud API, attempt to create a buyer address. **Warning** - if you're doing this through the Portal UI, make sure you select a specific user context in the upper left hand corner. Requests in the Portal without a specific user context are not assosiated with an ApiClientID so will not trigger webhooks. As you try to create the address, your local break point should be hit! Now you can develop your custom logic.   
 
