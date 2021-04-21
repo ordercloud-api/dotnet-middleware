@@ -5,9 +5,9 @@ Example middleware patterns for [Ordercloud](https://ordercloud.io/) using the [
 
 Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware.
 
-### Start an API from Scratch
+### [Start an API from Scratch](./Guides/SetupApi.md)
 
-Learn how to stand up a hosted middleware API from scratch. [Guide Here](./Guides/SetupApi.md)
+Learn how to stand up a hosted middleware API from scratch.
 
 ### Hook into any event with Webhooks 
 
