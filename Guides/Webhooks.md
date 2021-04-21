@@ -37,7 +37,7 @@ When you are first setting up webhooks and later when you are developing the cus
 
 ![Alt text](./ngrok_forwarding.png "Running Ngrok")
 
-**Warning** - if you stop and restart the ngrok process, this url will change.
+**Warning** - if you stop and restart the ngrok process, this url will change. A paid ngrok account will give you a dedicated url.
 
 While Ngrok is running you can navigate to https://localhost:4040 for even more detailed logs, including http details and the ability to replay a request. If you place a debug breakpoint inside the function `GetEnvironment()` and replay the request to /api/env, your breakpoint will be hit.  
 
