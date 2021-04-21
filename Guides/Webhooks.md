@@ -43,7 +43,7 @@ While Ngrok is running you can navigate to https://localhost:4040 for even more 
 
 Now its time to configure OrderCloud to send webhook requests. Do this with the [create webhook](https://ordercloud.io/api-reference/seller/webhooks/create) API endpoint. The easiest way is probably through the Portal UI. For the two example routes, the two webhook objects you should create are 
 
-```json
+```jsonc
 {
 	"Name": "Create Address",
 	"Description": "",
