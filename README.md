@@ -9,9 +9,9 @@ Developers building OrderCloud ecommerce apps often use a server-side project fo
 
 Learn how to stand up a hosted middleware API from scratch.
 
-### Hook into any event with Webhooks 
+### [Configure Webhook Event Listeners](./Guides/Webhooks.md) 
 
-Learn how to hook custom logic into any Ordercloud API request with Webhooks. [Guide Here](./Guides/Webhooks.md)
+Learn how to hook custom logic into any Ordercloud API request with Webhooks.
 
 ### Checkout Integrations for Commerce 
  
