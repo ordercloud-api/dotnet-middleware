@@ -41,7 +41,7 @@ While Ngrok is running you can navigate to https://localhost:4040 for even more 
 
 ### Create Webhook configuration in OrderCloud
 
-Now its time to configure OrderCloud to send webhook requests. Do this with the [create webhook](https://ordercloud.io/api-reference/seller/webhooks/create) API endpoint. The easiest way is probably through the Portal UI. For the two example routes, the two webhook objects you should create are 
+Now its time to configure OrderCloud to send webhook requests. Do this with the [create webhook](https://ordercloud.io/api-reference/seller/webhooks/create) API endpoint. The easiest way is probably through the [API Portal](https://portal.ordercloud.io/console). For the two example routes, the two webhook objects you should create are 
 
 ```jsonc
 {
@@ -81,11 +81,11 @@ Now its time to configure OrderCloud to send webhook requests. Do this with the 
 
 Make sure you assign these webhook configs to ApiClientIDs. Requests made to the API with these ApiClientIDs will trigger webhooks. If your unsure, add all of them to the array.
 
-To see a list of all available webhook triggers, create a webhook config through the Portal UI.
+To see a list of all available webhook triggers, create a webhook config through the API Portal.
 
 ![Alt text](./webhook_triggers.png "See Webhook Triggers")
 
-You are now ready to trigger your first webhook. Place a break point in `HandleAddressCreate()`. Through the OrderCloud API, attempt to create a buyer address. **Warning** - if you're doing this through the Portal UI, make sure you select a specific user context in the upper left hand corner. Requests in the Portal without a specific user context are not assosiated with an ApiClientID so will not trigger webhooks. As you try to create the address, your local break point should be hit! Now you can develop your custom logic.   
+You are now ready to trigger your first webhook. Place a break point in `HandleAddressCreate()`. Through the OrderCloud API, attempt to create a buyer address. **Warning** - if you're doing this through the API Portal, make sure you select a specific user context in the upper left hand corner. Requests in the API Portal without a specific user context are not assosiated with an ApiClientID so will not trigger webhooks. As you try to create the address, your local break point should be hit! Now you can develop your custom logic.   
 
 For each additional webhook event you wish to listen to, create a route in your code and a matching webhook config.
 
