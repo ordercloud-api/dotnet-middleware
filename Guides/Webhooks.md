@@ -10,7 +10,7 @@ First, clone this github project into your local file system and consider settin
 
 ![Alt text](./webhook_route_docs.png "Route documentation for example webhooks")
 
-Lets look at the code in [WebhookController.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/Controllers/WebhookController.cs) to make this happen.  
+Lets look at the code in [WebhookController.cs](https://github.com/ordercloud-api/dotnet-catalyst-examples/blob/dev/Catalyst.Api/Controllers/WebhookController.cs) that makes this happen.  
 
 ```c#
 [HttpPost("api/webhook/createaddress")]
