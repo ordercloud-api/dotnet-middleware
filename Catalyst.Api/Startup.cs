@@ -6,6 +6,7 @@ using OrderCloud.SDK;
 using Microsoft.OpenApi.Models;
 using Catalyst.Common;
 using Catalyst.Common.Commands;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Catalyst.Api
 {
@@ -30,11 +31,19 @@ namespace Catalyst.Api
 					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
+				.Configure<KestrelServerOptions>(options =>
+				{
+					options.AllowSynchronousIO = true;
+				})
+				.Configure<IISServerOptions>(options =>
+				{
+					options.AllowSynchronousIO = true; // catalyst bug https://four51.atlassian.net/browse/HDS-190
+				})
 				.AddScoped<VerifiedUserContext>()
 				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
 				 {
-					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cataylst Test API", Version = "v1" });
+					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });
 				 });
 		}
 
