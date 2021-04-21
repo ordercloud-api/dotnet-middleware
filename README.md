@@ -3,7 +3,11 @@ Example middleware patterns for [Ordercloud](https://ordercloud.io/) using the [
 
 ### Start an API from Scratch
 
-Learn how to stand up a hosted middleware API from scratch. [Guide Here](./Guides/SetupApi.md)
+Learn how to stand up a hosted middleware API from scratch.Guide Here](./Guides/SetupApi.md)
+
+### Hook into any event with Webhooks 
+
+Learn how to hook custom logic into any Ordercloud API request with Webhooks. [Guide Here](./Guides/Webhooks.md)
 
 ### Checkout Integrations for Commerce 
  
@@ -23,11 +27,7 @@ Learn how to forward orders captured in ordercloud to a downstream system that h
 
 Coming soon ...
 
-### Hook into any event with Webhooks 
 
-Learn how to hook custom logic into any Ordercloud API request with Webhooks.
-
-Coming soon ...
 
 ### Proxy an API endpoint to extend functionality
 
