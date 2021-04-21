@@ -6,7 +6,7 @@ This guide will show you how to create your own http endpoints that perform cust
 
 ### Get code and run API locally 
 
-First, clone this github project into your local file system and consider setting up your own version control repository. Then, run the api project locally. To do this, follow instructions in [Start an API from scratch](../SetupApi.md). Stop before the section "Publish API to Azure App Service". When you run the api locally and navigate to https://localhost:5001 you should see route documentation, including two example webhook routes.    
+First, clone this github project into your local file system and consider setting up your own version control repository. Then, run the api project locally. To do this, follow instructions in [Start an API from scratch](./SetupApi.md). Stop before the section "Publish API to Azure App Service". When you run the api locally and navigate to https://localhost:5001 you should see route documentation, including two example webhook routes.    
 
 ![Alt text](./webhook_route_docs.png "Route documentation for example webhooks")
 
@@ -92,6 +92,6 @@ For each additional webhook event you wish to listen to, create a route in your 
 
 ### Publish Webhook Listeners
 
-The final step is to deploy this logic. Continue the guide [Start an API from scratch](../SetupApi.md) to see steps for deploying your API. For webhooks, an important additional step is to update your configuration in OrderCloud. Make sure the `Url` property is changed from `https://{ngrok-host}/api/webhook/orderapproved` to `https://{my-hosted-site}/api/webhook/orderapproved`, for example. Do this for all your webhook configs. 
+The final step is to deploy this logic. Continue the guide [Start an API from scratch](./SetupApi.md) to see steps for deploying your API. For webhooks, an important additional step is to update your configuration in OrderCloud. Make sure the `Url` property is changed from `https://{ngrok-host}/api/webhook/orderapproved` to `https://{my-hosted-site}/api/webhook/orderapproved`, for example. Do this for all your webhook configs. 
 
 Congratuations, you have set up OrderCloud webhooks!
