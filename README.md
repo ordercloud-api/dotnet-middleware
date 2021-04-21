@@ -3,7 +3,7 @@ Example middleware patterns for [Ordercloud](https://ordercloud.io/) using the [
 
 ### Start an API from Scratch
 
-Learn how to stand up a hosted middleware API from scratch.Guide Here](./Guides/SetupApi.md)
+Learn how to stand up a hosted middleware API from scratch. [Guide Here](./Guides/SetupApi.md)
 
 ### Hook into any event with Webhooks 
 
