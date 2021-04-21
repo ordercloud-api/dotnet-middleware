@@ -1,6 +1,10 @@
 # dotnet-catalyst-examples
 Example middleware patterns for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
+#### Why do I need middleware? 
+
+Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware.
+
 ### Start an API from Scratch
 
 Learn how to stand up a hosted middleware API from scratch. [Guide Here](./Guides/SetupApi.md)
