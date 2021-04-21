@@ -15,9 +15,9 @@ namespace Catalyst.Api
 			var connectionString = Environment.GetEnvironmentVariable("APP_CONFIG_CONNECTION");
 
 			CatalystWebHostBuilder
-				//.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
-				// If use Azure App Configuration, uncomment the line above. If not, bind AppSettings as you choose.
-				.CreateWebHostBuilder<Startup, AppSettings>(args)
+				.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
+				// If not using Azure App Configuration, remove the line above and bind AppSettings as you choose.
+				// .CreateWebHostBuilder<Startup, AppSettings>(args)
 				.Build()
 				.Run();
 		}
