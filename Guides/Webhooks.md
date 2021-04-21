@@ -87,7 +87,7 @@ To see a list of all available webhook triggers, create a webhook config through
 
 You are now ready to trigger your first webhook. Place a break point in `HandleAddressCreate()`. Through the OrderCloud API, attempt to create a buyer address. **Warning** - if you're doing this through the Portal UI, make sure you select a specific user context in the upper left hand corner. Requests in the Portal without a specific user context are not assosiated with an ApiClientID so will not trigger webhooks. As you try to create the address, your local break point should be hit! Now you can develop your custom logic.   
 
-For each additional webhook event you wish to listen to, create a route in your code and a matching webhook confige 
+For each additional webhook event you wish to listen to, create a route in your code and a matching webhook config.
 
 
 ### Publish Webhook Listeners
