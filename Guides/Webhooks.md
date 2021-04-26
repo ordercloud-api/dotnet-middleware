@@ -2,7 +2,7 @@
 
 ### What is this guide?
 
-This guide will show you how to create your own http endpoints that perform custom logic in response to requests initiated by the OrderCloud platfrom. These requests can be triggered by any action in the platform and are called webhooks. Before beginning, read the guide ["Using Webhooks"](https://ordercloud.io/knowledge-base/using-webhooks) in the knowledge base to familiarize yourself with concepts. This guide will focus on step-by-step instructions and code examples to get you to the point where you know webhooks are working. 
+This guide will show you how to create your own http endpoints that perform custom logic in response to requests initiated by the OrderCloud platform. These requests can be triggered by any action in the platform and are called webhooks. Before beginning, read the guide ["Using Webhooks"](https://ordercloud.io/knowledge-base/using-webhooks) in the knowledge base to familiarize yourself with concepts. This guide will focus on step-by-step instructions and code examples to get you to the point where you know webhooks are working. 
 
 ### Get code and run API locally 
 
