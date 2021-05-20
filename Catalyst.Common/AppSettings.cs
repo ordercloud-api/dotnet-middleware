@@ -3,8 +3,15 @@
 	public class AppSettings
 	{
 		public OrderCloudSettings OrderCloudSettings { get; set; } = new OrderCloudSettings();
-		public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
+		public ServiceBusSettings ServiceBusSettings { get; set; } = new ServiceBusSettings();
+        public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
 		public RedisSettings RedisSettings { get; set; } = new RedisSettings(); // only need this if you use Redis
+	}
+
+	public class ServiceBusSettings
+	{
+		public string ConnectionString { get; set; }
+		public string OrderProcessingQueueName { get; set; }
 	}
 
 	public class RedisSettings
