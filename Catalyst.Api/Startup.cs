@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Catalyst.Common;
 using Catalyst.Common.Commands;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Catalyst.Common.Services;
 
 namespace Catalyst.Api
 {
@@ -40,6 +41,7 @@ namespace Catalyst.Api
 					options.AllowSynchronousIO = true; // catalyst bug https://four51.atlassian.net/browse/HDS-190
 				})
 				.AddScoped<VerifiedUserContext>()
+				.AddSingleton<IServiceBus, ServiceBus>()
 				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
 				 {
