@@ -7,10 +7,6 @@ This guide provides step-by-step instructions to stand up a hosted middleware AP
 - [.NET Core 3.1](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-3.1) for development framework
 - Ordercloud [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) to accelerate Ordercloud-specific features. 
 
-### Why do I need middleware? 
-
-Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware. 
-
 ### Setting up Accounts
 
 Before beginning you will need an [Ordercloud account](https://portal.ordercloud.io/register) and an [Azure account](https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go). You should register for both before continuing. You will also need these free tools installed on your local machine - the .NET Framework, the .NET Core 3.1 runtime and Visual Studio 2019.

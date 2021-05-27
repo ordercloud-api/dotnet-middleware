@@ -1,4 +1,7 @@
-﻿using OrderCloud.SDK;
+﻿using Catalyst.Api;
+using Catalyst.Common.Models;
+using Catalyst.Common.Services;
+using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +19,16 @@ namespace Catalyst.Common.Commands
 
 	public class CheckoutIntegrationCommand : ICheckoutIntegrationCommand
 	{
+		private readonly IServiceBus _serviceBus;
+		private readonly AppSettings _settings;
+		public CheckoutIntegrationCommand(
+			IServiceBus serviceBus,
+			AppSettings settings
+		)
+        {
+			_serviceBus = serviceBus;
+			_settings = settings;
+        }
 		public async Task<ShipEstimateResponse> GetShippingRates(OrderCalculatePayload<CheckoutConfig> payload)
 		{
 			var response = new ShipEstimateResponse();
@@ -55,7 +68,13 @@ namespace Catalyst.Common.Commands
 		{
 			// Send email to the purchaser
 			var toEmail = payload.OrderWorksheet.Order.FromUser.Email;
+
 			// Forward order to an ERP or fullfilment system
+			var message = new ExampleMessageType
+			{
+				OrderID = payload.OrderWorksheet.Order.ID
+			};
+			await _serviceBus.SendMessage(_settings.ServiceBusSettings.OrderProcessingQueueName, message, afterMinutes: 1);
 
 			// Return response
 			return new OrderSubmitResponse()
