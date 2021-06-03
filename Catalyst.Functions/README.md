@@ -2,6 +2,21 @@
 
 The purpose of this project is to demonstate the use of OrderCloud within an Azure Functions application.  The project demonstrates how to inject the OrderCloud SDK in the Startup function and how to leverage it for simple call within the Functions class.
 
+#ProductUpload
+
+The ProductUpload feature was created to demonstrate how to take a data source and use it to build a set of products on OrderCloud.  In this demo we use a example_products.json file.  The proces works by reading the sample data and transsforming it into OrderCloud C# classes.  Then products are grouped together and uploaded to OrderCloud.
+
+When uploading products to OrderCloud it is important to follow the basic order of:
+1. Build The Price Schedule
+2. Build The Product
+3. Build a Spec (if needed)
+4. Build Spec Options (if needed)
+5. Assign Specs to Product
+6. Generate Variants (if needed)
+7. Modifying Variants (if needed)
+
+Addtional steps may include creating Variants and Assigning Products to Buyer Groups.
+
 # Adding Settings Locally
 1. Open the Headstart.sln in Visual Studio
 2. Right click on the Headstart.Functions project and click on "Properties"

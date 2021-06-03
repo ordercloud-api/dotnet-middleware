@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Catalyst.Common;
 using Microsoft.Extensions.Configuration;
 using OrderCloud.Catalyst;
+using Catalyst.WebJobs.ProductUpload.Commands;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Catalyst.WebJobs
@@ -28,6 +29,7 @@ namespace Catalyst.WebJobs
             });
             builder.Services.AddSingleton(_settings);
             builder.Services.AddSingleton<IOrderCloudClient>(orderCloudClient);
+            builder.Services.AddSingleton<IProductCommand, ProductCommand>();
         }
     }           
 }
