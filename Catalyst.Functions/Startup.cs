@@ -1,15 +1,15 @@
 ﻿using System;
-using Catalyst.WebJobs;
 using OrderCloud.SDK;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Catalyst.Common;
-using Microsoft.Extensions.Configuration;
 using OrderCloud.Catalyst;
-using Catalyst.WebJobs.ProductUpload.Commands;
+using Catalyst.Common.ProductUpload.Commands;
+using Catalyst.Functions;
+using Catalyst.Functions.Jobs.ForwardOrdersToThirdParty;
 
 [assembly: FunctionsStartup(typeof(Startup))]
-namespace Catalyst.WebJobs
+namespace Catalyst.Functions
 {
     public class Startup : FunctionsStartup
     {
@@ -17,19 +17,21 @@ namespace Catalyst.WebJobs
         public override void Configure(IFunctionsHostBuilder builder)
         {
             var connectionString = Environment.GetEnvironmentVariable("APP_CONFIG_CONNECTION");
-            var _settings = builder.BuildSettingsFromAzureAppConfig<AppSettings>(connectionString);
+            var settings = builder.BuildSettingsFromAzureAppConfig<AppSettings>(connectionString);
 
             var orderCloudClient = new OrderCloudClient(new OrderCloudClientConfig
             {
-                ApiUrl = _settings.OrderCloudSettings.ApiUrl,
-                AuthUrl = _settings.OrderCloudSettings.ApiUrl,
-                ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
-                ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
+                ApiUrl = settings.OrderCloudSettings.ApiUrl,
+                AuthUrl = settings.OrderCloudSettings.ApiUrl,
+                ClientId = settings.OrderCloudSettings.MiddlewareClientID,
+                ClientSecret = settings.OrderCloudSettings.MiddlewareClientSecret,
                 Roles = new[] { ApiRole.FullAccess }
             });
-            builder.Services.AddSingleton(_settings);
+            builder.Services.AddSingleton(settings);
             builder.Services.AddSingleton<IOrderCloudClient>(orderCloudClient);
             builder.Services.AddSingleton<IProductCommand, ProductCommand>();
+            builder.Services.AddSingleton<ForwardOrderJob>();
+
         }
     }           
 }

@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Catalyst.WebJobs.ProductUpload.Models;
-using Catalyst.WebJobs.ProductUpload.Mapping;
 using OrderCloud.SDK;
-using Catalyst.WebJobs.ProductUpload.Extensions;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using Catalyst.Common;
 using System.Reflection;
 using Newtonsoft.Json;
+using Catalyst.Common.ProductUpload.Models;
+using OrderCloud.Catalyst;
+using Catalyst.Common.ProductUpload.Mapping;
 
-namespace Catalyst.WebJobs.ProductUpload.Commands
+namespace Catalyst.Common.ProductUpload.Commands
 {
     public interface IProductCommand 
     {
-        Task ProcessSampleProducts(string file, string token, ILogger logger);
+        Task ProcessSampleProducts(string file, ILogger logger);
     }
 
     public class ProductCommand : IProductCommand
@@ -29,12 +28,12 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             _oc = oc;
         }
 
-        public async Task<PriceSchedule> BuildPriceScheduleOC(PriceSchedule ps, string token, ILogger logger)
+        public async Task<PriceSchedule> BuildPriceScheduleOC(PriceSchedule ps, ILogger logger)
         {
             try
             {
-                Console.WriteLine("PS: " + ps.ID);
-                var p = await _oc.PriceSchedules.SaveAsync<PriceSchedule>(ps.ID, ps, token);
+                logger.LogInformation("PS: " + ps.ID);
+                var p = await _oc.PriceSchedules.SaveAsync<PriceSchedule>(ps.ID, ps);
                 return p;
             }
             catch (Exception ex)
@@ -44,12 +43,12 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             }
         }
 
-        public async Task<Product> BuildProductOC(Product product, string token, ILogger logger)
+        public async Task<Product> BuildProductOC(Product product, ILogger logger)
         {
             try
             {
-                Console.WriteLine("Product: " + product.ID);
-                var p = await _oc.Products.SaveAsync<Product>(product.ID, product, token);
+                logger.LogInformation("Product: " + product.ID);
+                var p = await _oc.Products.SaveAsync<Product>(product.ID, product);
                 return p;
             }
             catch (Exception ex)
@@ -59,12 +58,12 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             }
         }
 
-        public async Task<Spec> BuildSpecOC(Spec spec, string token, ILogger logger)
+        public async Task<Spec> BuildSpecOC(Spec spec, ILogger logger)
         {
             try
             {
-                Console.WriteLine("Spec: " + spec.ID);
-                var s = await _oc.Specs.SaveAsync<Spec>(spec.ID, spec, token);
+                logger.LogInformation("Spec: " + spec.ID);
+                var s = await _oc.Specs.SaveAsync<Spec>(spec.ID, spec);
                 return s;
             }
             catch (Exception ex)
@@ -74,13 +73,12 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             }
         }
 
-        public async Task<SpecOption> BuildSpecOptionOC(SpecOption option, string token, ILogger logger)
+        public async Task<SpecOption> BuildSpecOptionOC(SpecOption option, ILogger logger)
         {
             try
             {
-                Console.WriteLine("Option: " + option.ID);
-                var o = await _oc.Specs.SaveOptionAsync<SpecOption>(option.xp.SpecID, option.ID, option,
-                    token);
+                logger.LogInformation("Option: " + option.ID);
+                var o = await _oc.Specs.SaveOptionAsync<SpecOption>(option.xp.SpecID, option.ID, option);
                 return o;
             }
             catch (Exception ex)
@@ -91,12 +89,12 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
 
         }
 
-        public async Task<SpecProductAssignment> BuildSpecProductAssignmentOC(SpecProductAssignment assn, string token, ILogger logger)
+        public async Task<SpecProductAssignment> BuildSpecProductAssignmentOC(SpecProductAssignment assn, ILogger logger)
         {
             try
             {
-                Console.WriteLine("Spec Product Assignment: " + assn.ProductID);
-                await _oc.Specs.SaveProductAssignmentAsync(assn, token);
+                logger.LogInformation("Spec Product Assignment: " + assn.ProductID);
+                await _oc.Specs.SaveProductAssignmentAsync(assn);
                 return assn;
             }
             catch (Exception ex)
@@ -105,19 +103,19 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
                 return null;
             }
         }
-        public async Task GenerateOCVariants(string productID, string token, ILogger logger)
+        public async Task GenerateOCVariants(string productID, ILogger logger)
         {
             try
             {
-                Console.WriteLine("Generate Variants: " + productID);
-                await _oc.Products.GenerateVariantsAsync(productID, overwriteExisting: true, accessToken: token);
+                logger.LogInformation("Generate Variants: " + productID);
+                await _oc.Products.GenerateVariantsAsync(productID, overwriteExisting: true);
             }
             catch (Exception ex)
             {
                 logger.LogInformation($"Generate OC Variants failed {ex.Message}: Product: {productID}");
             }
         }
-        public async Task UpdateProductVariantsOC(VariantPlaceholder variant, string token, ILogger logger)
+        public async Task UpdateProductVariantsOC(VariantPlaceholder variant, ILogger logger)
         {
             try
             {
@@ -127,9 +125,9 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
                 // Modify the ID for the newly genrated variants.
                 foreach (Variant v in genertatedVariants.Items)
                 {
-                    Console.WriteLine("Update Variant: " + v.ID);
-                    Variant ocVariant = await _oc.Products.GetVariantAsync(variant.ProductID, v.ID, token);
-                    var ocSpec = await _oc.Specs.GetAsync(variant.SpecID, token);
+                    logger.LogInformation("Update Variant: " + v.ID);
+                    Variant ocVariant = await _oc.Products.GetVariantAsync(variant.ProductID, v.ID);
+                    var ocSpec = await _oc.Specs.GetAsync(variant.SpecID);
                     if(ocVariant != null && ocSpec != null)
                     {
                         foreach (SpecOption specOption in ocSpec.Options)
@@ -142,7 +140,7 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
                                 }
                             }
                         }
-                        await _oc.Products.SaveVariantAsync(variant.ProductID, v.ID, ocVariant, token);
+                        await _oc.Products.SaveVariantAsync(variant.ProductID, v.ID, ocVariant);
                     }
                 }
             }
@@ -152,9 +150,9 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             }
         }
 
-        public async Task ProcessSampleProducts(string filename, string token, ILogger logger)
+        public async Task ProcessSampleProducts(string filename, ILogger logger)
         {
-            Console.WriteLine("Processing Sample Products");
+            logger.LogInformation("Processing Sample Products");
             List<PriceSchedule> prices = new List<PriceSchedule>();
             List<Product> products = new List<Product>();
             List<Spec> specs = new List<Spec>();
@@ -205,33 +203,34 @@ namespace Catalyst.WebJobs.ProductUpload.Commands
             }
 
             // Build PriceShcedule
-            await Throttler.RunAsync(prices, 100, 20, price => BuildPriceScheduleOC(price, token, logger));
+            await Throttler.RunAsync(prices, 100, 20, price => BuildPriceScheduleOC(price, logger));
 
             // Build Product
-            await Throttler.RunAsync(products, 100, 20, product => BuildProductOC(product, token, logger));
+            await Throttler.RunAsync(products, 100, 20, product => BuildProductOC(product, logger));
 
             if(specs.Count > 0)
             {
                 // Build Specs
-                await Throttler.RunAsync(specs, 100, 20, spec => BuildSpecOC(spec, token, logger));
+                await Throttler.RunAsync(specs, 100, 20, spec => BuildSpecOC(spec, logger));
 
                 // Build Spec Options
-                await Throttler.RunAsync(specOptions, 100, 20, specoption => BuildSpecOptionOC(specoption, token, logger));
+                await Throttler.RunAsync(specOptions, 100, 20, specoption => BuildSpecOptionOC(specoption, logger));
 
                 // Assign Specs to Product
-                await Throttler.RunAsync(specProductAssignments, 100, 20, specprodassignment => BuildSpecProductAssignmentOC(specprodassignment, token, logger));
+                await Throttler.RunAsync(specProductAssignments, 100, 20, specprodassignment => BuildSpecProductAssignmentOC(specprodassignment, logger));
 
                 // Generate Variants
                 var variantGroups = variantPlaceholders.GroupBy(v => v.ProductID);
                 foreach (IList<VariantPlaceholder> variantGroup in variantGroups)
                 {
                     // Allow the system to generate variants based on selection specs
-                    await GenerateOCVariants(variantGroup[0].ProductID, token, logger);
+                    await GenerateOCVariants(variantGroup[0].ProductID, logger);
 
                     //Modify the generated specs to use custom variant id's
-                    await Throttler.RunAsync(variantGroup, 500, 1, variant => UpdateProductVariantsOC(variant, token, logger));
+                    await Throttler.RunAsync(variantGroup, 500, 1, variant => UpdateProductVariantsOC(variant, logger));
                 }
             }
+            logger.LogInformation($"Process BrandwearProducts Complete.");
         }
     }
 }

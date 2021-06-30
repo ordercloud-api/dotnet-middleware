@@ -10,12 +10,12 @@ namespace Catalyst.Api.Controllers
 	// As the developer, you'd want to give buyer users with a specific flag read access to specific orders.
 	// You may need to proxy the Ordercloud List Orders endpoint server-side to achieve the correct permissions behavior.
 	[Route("api/proxy")]
-	public class ProxyListOrdersController : BaseController
+	public class ProxyListOrdersController : CatalystController
 	{
 		private readonly IOrderCloudClient _oc;
-		private readonly VerifiedUserContext _user;
+		private readonly DecodedToken _user;
 
-		public ProxyListOrdersController(IOrderCloudClient oc, VerifiedUserContext user)
+		public ProxyListOrdersController(IOrderCloudClient oc, DecodedToken user)
 		{
 			_oc = oc;
 			_user = user;
@@ -26,7 +26,7 @@ namespace Catalyst.Api.Controllers
 		// The IListArgs model describes list arguments that let api users query data expressively with query params. 
 		public async Task<ListPage<Order>> ListOrdersForBillingAddress(IListArgs args)
 		{
-			var me = await _user.OcClient.Me.GetAsync();
+			var me = await _user.BuildClient().Me.GetAsync();
 			if (me.xp.FranchiseRole != "Owner")
 			{
 				throw new UnAuthorizedException();

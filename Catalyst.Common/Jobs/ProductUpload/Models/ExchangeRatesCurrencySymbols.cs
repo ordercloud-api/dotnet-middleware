@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Catalyst.WebJobs.ProductUpload.Models
+namespace Catalyst.Common.ProductUpload.Models
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CurrencySymbol

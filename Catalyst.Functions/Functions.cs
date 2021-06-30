@@ -4,52 +4,51 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using OrderCloud.SDK;
-using Catalyst.WebJobs.ProductUpload.Commands;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
+using MessageSender = Microsoft.Azure.ServiceBus.Core.MessageSender;
+using Catalyst.Common.ProductUpload.Commands;
+using Catalyst.Functions.Jobs.ForwardOrdersToThirdParty;
 
-namespace Catalyst.WebJobs
+namespace Catalyst.Functions
 {
     public class Functions
     {
         private readonly IOrderCloudClient _oc;
         private readonly IProductCommand _product;
+        private readonly ForwardOrderJob _forwardJob;
 
-        public Functions(IOrderCloudClient oc, IProductCommand product)
+        public Functions(IOrderCloudClient oc, IProductCommand product, ForwardOrderJob forwardJob)
         {
             _oc = oc;
             _product = product;
+            _forwardJob = forwardJob;
         }
 
-        public async Task SampleFunction(ILogger log)
-        {
-            // Get a token that can be used to make calls to the OrderCloud API using the OrderCloud SDK.
-            var token = await GetTokenAsync();
-            log.LogInformation($"Token: " + token);
+        // A simple example of a job that prints the authenticated OrderCloud username every 5 mins.
+        [FunctionName("PrintUsername")]
+        public async Task PrintToken([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger logger)
+		{
+            var user = await _oc.Me.GetAsync();
+            logger.LogInformation($"Username: " + user.Username);
         }
-        public async Task ProductUploadFunction(ILogger log)
-        {
-            // Get a token that can be used to make calls to the OrderCloud API using the OrderCloud SDK.
-            var token = await GetTokenAsync();
-            await _product.ProcessSampleProducts(@"/ProductUpload/example_products.json", token, log);
-            log.LogInformation($"ProcessBrandwearProducts Complete.");
-        }
-
-        // Fire every 5 minutes
-        [FunctionName("SampleOrderCloudFunction")]
-        public async Task SampleOrderCloudFunction([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger logger) => await SampleFunction(logger);
         
         // Fire at 2:30am daily
-        [FunctionName("SampleProductUploadFunction")]
-        public async Task SampleProductUploadFunction([TimerTrigger("0 30 2 * * *")] TimerInfo myTimer, ILogger logger) => await ProductUploadFunction(logger);
+        [FunctionName("BulkUploadProducts")]
+        public async Task BulkUploadProducts([TimerTrigger("0 30 2 * * *")] TimerInfo myTimer, ILogger logger) => 
+            await _product.ProcessSampleProducts(@"/ProductUpload/example_products.json", logger);
 
-        private async Task<string> GetTokenAsync()
-        {
-            var token = _oc.TokenResponse?.AccessToken;
-            if (token == null || DateTime.UtcNow > _oc.TokenResponse.ExpiresUtc)
-            {
-                await _oc.AuthenticateAsync();
-                token = _oc.TokenResponse?.AccessToken;
-            }
-            return token;
-        }
+        [FunctionName("ForwardOrder")]
+        public async Task ForwardOrder(
+       [ServiceBusTrigger(
+            queueName: "%ServiceBusSettings:OrderProcessingQueueName%",  // queueName can be stored in your app Configuration as it is here, or hard coded.
+            Connection = "ServiceBusSettings:ConnectionString")]
+        Message message,
+       MessageReceiver messageReceiver,
+       [ServiceBus(
+            queueOrTopicName: "%ServiceBusSettings:OrderProcessingQueueName%",
+            Connection = "ServiceBusSettings:ConnectionString" )]
+        MessageSender messageSender,
+       ILogger logger) => await _forwardJob.Run(logger, message, messageReceiver, messageSender);
     }
 }

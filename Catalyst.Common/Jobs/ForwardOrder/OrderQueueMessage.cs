@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Catalyst.Common.Models
 {
-    public class ExampleMessageType
+    public class OrderQueueMessage
     {
         public string OrderID { get; set; }
     }

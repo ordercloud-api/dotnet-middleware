@@ -1,4 +1,4 @@
-﻿using Catalyst.WebJobs.ProductUpload.Models;
+﻿using Catalyst.Common.ProductUpload.Models;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Catalyst.WebJobs.ProductUpload.Mapping
+namespace Catalyst.Common.ProductUpload.Mapping
 {
     class ProductMapping
     {

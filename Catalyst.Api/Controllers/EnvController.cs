@@ -5,7 +5,7 @@ using OrderCloud.Catalyst;
 namespace Catalyst.Api.Controllers
 {
 	[Route("api/env")]
-	public class EnvController : BaseController
+	public class EnvController : CatalystController
 	{
 		private readonly AppSettings _settings;
 		public EnvController(AppSettings settings)

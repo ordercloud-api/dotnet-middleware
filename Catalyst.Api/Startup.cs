@@ -40,8 +40,7 @@ namespace Catalyst.Api
 				{
 					options.AllowSynchronousIO = true; // catalyst bug https://four51.atlassian.net/browse/HDS-190
 				})
-				.AddScoped<VerifiedUserContext>()
-				.AddSingleton<IServiceBus, ServiceBus>()
+				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
 				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
 				 {

@@ -10,7 +10,7 @@ namespace Catalyst.Api.Controllers
 	// You can configure Ordercloud to send webhook notifications to your middleware either before (a pre-webook) or after (a post-webhook) any write API request to Ordercloud.  
 	// Learn about that configuration at https://ordercloud.io/knowledge-base/using-webhooks#register-your-hook-with-ordercloud.
 	// When developing webhook listeners, you may want to test them before publishing to a hosted env. https://ngrok.com/ is free developer tool that supports this workflow by creating public tunnels to your local routes.
-	public class WebhookController : BaseController
+	public class WebhookController : CatalystController
 	{
 		private readonly IOrderCloudClient _oc;
 

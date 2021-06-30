@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Catalyst.Jobs
+namespace Catalyst.Functions
 {
     //  Base Job class with methods for tracking skipped, succeeded, and failed counts in Jobs
     //  Also includes methods for logging information

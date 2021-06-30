@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Catalyst.WebJobs.ProductUpload.Models
+namespace Catalyst.Common.ProductUpload.Models
 {
     public class VariantPlaceholder
     {

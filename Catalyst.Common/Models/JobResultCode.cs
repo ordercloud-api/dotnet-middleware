@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Catalyst.Common.Models
 {
-    public enum ResultCode
+    public enum JobResultCode
     {
         Success,
         TemporaryFailure,

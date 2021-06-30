@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Catalyst.Common.Services
 {
-    public interface IServiceBus
+    public interface IAzureServiceBus
     {
         Task SendMessage<T>(string queueName, T message, double? afterMinutes = null);
     }
 
-    public class ServiceBus : IServiceBus
+    public class AzureServiceBus : IAzureServiceBus
     {
         private readonly ConcurrentDictionary<string, ServiceBusSender> senders = new ConcurrentDictionary<string, ServiceBusSender>();
         private readonly ServiceBusClient _client;

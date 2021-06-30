@@ -16,8 +16,8 @@ namespace Catalyst.Api
 
 			CatalystWebHostBuilder
 				.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
-				// If not using Azure App Configuration, remove the line above and bind AppSettings as you choose.
 				// .CreateWebHostBuilder<Startup, AppSettings>(args)
+				//  If not using Azure App Configuration, use this line instead of above.
 				.Build()
 				.Run();
 		}

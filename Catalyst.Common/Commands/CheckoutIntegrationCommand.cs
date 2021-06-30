@@ -1,6 +1,6 @@
-﻿using Catalyst.Api;
-using Catalyst.Common.Models;
+﻿using Catalyst.Common.Models;
 using Catalyst.Common.Services;
+using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
@@ -19,10 +19,10 @@ namespace Catalyst.Common.Commands
 
 	public class CheckoutIntegrationCommand : ICheckoutIntegrationCommand
 	{
-		private readonly IServiceBus _serviceBus;
+		private readonly IAzureServiceBus _serviceBus;
 		private readonly AppSettings _settings;
 		public CheckoutIntegrationCommand(
-			IServiceBus serviceBus,
+			IAzureServiceBus serviceBus,
 			AppSettings settings
 		)
         {
@@ -70,7 +70,7 @@ namespace Catalyst.Common.Commands
 			var toEmail = payload.OrderWorksheet.Order.FromUser.Email;
 
 			// Forward order to an ERP or fullfilment system
-			var message = new ExampleMessageType
+			var message = new OrderQueueMessage
 			{
 				OrderID = payload.OrderWorksheet.Order.ID
 			};
