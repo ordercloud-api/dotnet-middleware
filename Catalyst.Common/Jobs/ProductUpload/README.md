@@ -1,4 +1,4 @@
-﻿#ProductUpload
+﻿# ProductUpload
 
 The ProductUpload feature was created to demonstrate how to take a data source and use it to build a set of products on OrderCloud.  In this demo we use a example_products.json file.  The proces works by reading the sample data and transsforming it into OrderCloud C# classes.  Then products are grouped together and uploaded to OrderCloud.
 
