@@ -17,22 +17,15 @@ Learn how to hook custom logic into any Ordercloud API request with Webhooks.
  
 Learn how to plug in your preferred shipping, tax, and payment processing partners to Ordercloud.
 
-### Import Product Data
+### [Import Product Data](./Catalyst.Common/Jobs/ProductUpload)
 
 Learn how to import a product catalog to Ordercloud and keep it in sync with updates.
 
-Coming soon ...
-
-### Forward Submitted Orders 
+### [Forward Submitted Orders](./Catalyst.Common/Jobs/ForwardOrder) 
 
 Learn how to forward orders captured in ordercloud to a downstream system that handles fulfillment.
 
-Coming soon ...
-
-
-
-### Proxy an API endpoint to extend functionality
+### [Proxy an API endpoint to extend functionality](./Catalyst.Api/Controllers/ProxyListOrdersController.cs)
 
 Learn how to wrap an Ordercloud endpoint in your own hosted API to perform logic in a secure environment. 
 
-Coming soon ...
