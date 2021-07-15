@@ -1,8 +1,12 @@
-using Catalyst.Common;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using OrderCloud.Catalyst;
+using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
+using Catalyst.Common;
 
 namespace Catalyst.Api
 {
@@ -14,10 +18,21 @@ namespace Catalyst.Api
 			// For local development, set this in your visual studio Env Variables.
 			var connectionString = Environment.GetEnvironmentVariable("APP_CONFIG_CONNECTION");
 
-			CatalystWebHostBuilder
-				.CreateWebHostBuilder<Startup, AppSettings>(args, connectionString)
-				// .CreateWebHostBuilder<Startup, AppSettings>(args)
-				//  If not using Azure App Configuration, use this line instead of above.
+			if (connectionString == null)
+				throw new Exception("App settings not configured. Pass an Azure Config connection string into CreateWebHostBuilder().");
+
+			WebHost.CreateDefaultBuilder(args)
+				.UseDefaultServiceProvider(options => options.ValidateScopes = false)
+				.ConfigureAppConfiguration((context, config) =>
+				{
+					config.AddAzureAppConfiguration(connectionString);
+				})
+				.UseStartup<Startup>()
+				.ConfigureServices((ctx, services) =>
+				{
+					services.Configure<AppSettings>(ctx.Configuration);
+					services.AddTransient(sp => sp.GetService<IOptionsSnapshot<AppSettings>>().Value);
+				})
 				.Build()
 				.Run();
 		}
