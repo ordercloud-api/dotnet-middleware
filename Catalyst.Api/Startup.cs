@@ -52,14 +52,6 @@ namespace Catalyst.Api
 					ClientId = _settings.OrderCloudSettings.MiddlewareClientID,
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
-				.Configure<KestrelServerOptions>(options =>
-				{
-					options.AllowSynchronousIO = true;
-				})
-				.Configure<IISServerOptions>(options =>
-				{
-					options.AllowSynchronousIO = true; // catalyst bug https://four51.atlassian.net/browse/HDS-190
-				})
 				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
 				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
 				.AddSwaggerGen(c =>
