@@ -8,8 +8,8 @@
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
     <PackageReference Include="LazyCache" Version="2.1.3" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.3.0" />
-    <PackageReference Include="ordercloud-dotnet-catalyst" Version="1.3.2" />
-    <PackageReference Include="OrderCloud.SDK" Version="0.10.3" />
+    <PackageReference Include="ordercloud-dotnet-catalyst" Version="1.5.1" />
+    <PackageReference Include="OrderCloud.SDK" Version="0.10.4" />
   </ItemGroup>
 
   <ItemGroup>
