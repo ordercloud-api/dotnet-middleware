@@ -43,7 +43,7 @@ namespace Catalyst.Api
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 			services
-				.AddOrderCloudUserAuth()
+				.AddOrderCloudUserAuth(opts => opts.AddValidClientIDs(_settings.OrderCloudSettings.StorefrontClientID))
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
 				.AddSingleton<IOrderCloudClient>(new OrderCloudClient(new OrderCloudClientConfig() {

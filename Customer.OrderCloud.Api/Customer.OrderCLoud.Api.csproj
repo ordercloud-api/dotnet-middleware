@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Catalyst.Common\Catalyst.Common.csproj" />
+    <ProjectReference Include="..\Customer.OrderCloud.Common\Customer.OrderCloud.Common.csproj" />
   </ItemGroup>
 </Project>

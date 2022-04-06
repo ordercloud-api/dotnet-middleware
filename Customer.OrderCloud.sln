@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalyst.Api", "Catalyst.Api\Catalyst.Api.csproj", "{4A15E900-CEFA-425C-B6DE-8CAF5FB2E2F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Customer.OrderCloud.Api", "Customer.OrderCloud.Api\Customer.OrderCloud.Api.csproj", "{4A15E900-CEFA-425C-B6DE-8CAF5FB2E2F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalyst.Functions", "Catalyst.Functions\Catalyst.Functions.csproj", "{4A7DA0E1-513E-4AA8-BE3D-E4F59914CB42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Customer.OrderCloud.Functions", "Customer.OrderCloud.Functions\Customer.OrderCloud.Functions.csproj", "{4A7DA0E1-513E-4AA8-BE3D-E4F59914CB42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalyst.Common", "Catalyst.Common\Catalyst.Common.csproj", "{D7536E72-A670-4508-960F-429A2D54915C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Customer.OrderCloud.Common", "Customer.OrderCloud.Common\Customer.OrderCloud.Common.csproj", "{D7536E72-A670-4508-960F-429A2D54915C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
