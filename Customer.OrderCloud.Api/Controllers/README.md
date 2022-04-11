@@ -14,7 +14,7 @@ public class CheckoutIntegrationController
 	public async Task<ShipEstimateResponse> GetShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		// ...
-		var rates = _shippingEstimatorEstimateShippingAsync(packageList);
+		var rates = await _shippingEstimatorEstimateShippingAsync(packageList);
 		// ...
 	}
 
@@ -22,7 +22,7 @@ public class CheckoutIntegrationController
 	public async Task<OrderCalculateResponse> CalculateOrder([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		...
-		var taxCalculation = _taxCalculator.CalculateEstimateAsync(orderSummary);
+		var taxCalculation = await _taxCalculator.CalculateEstimateAsync(orderSummary);
 		// ...
 	}
 
@@ -30,7 +30,7 @@ public class CheckoutIntegrationController
 	public async Task<OrderSubmitResponse> HandleOrderSubmit([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		// ...
-		var authorizeResult = _creditCardProcessor.AuthorizeOnlyAsync(transaction);
+		var authorizeResult = await _creditCardProcessor.AuthorizeOnlyAsync(transaction);
 		// ...
 		await _taxCalculator.CommitTransactionAsync(orderSummary)
 	}
