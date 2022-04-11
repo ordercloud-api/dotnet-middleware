@@ -36,3 +36,20 @@ public class CheckoutIntegrationController
 	}
 }
 ```
+
+
+```c#
+using OrderCloud.Catalyst.Shipping.EasyPost;
+using OrderCloud.Catalyst.Tax.Avalara;
+using OrderCloud.Catalyst.Tax.Stripe;
+
+public class Startup
+{
+	public virtual void ConfigureServices(IServiceCollection services) {
+		// ...
+		services.AddSingleton<IShippingEstimator>(new EasyPostService() { ... });
+		services.AddSingleton<ITaxCalculator>(new AvalaraService() { ... });
+		services.AddSingleton<ICreditCardProcessor>(new StripeService() { ... });
+		// ...
+	}
+}
