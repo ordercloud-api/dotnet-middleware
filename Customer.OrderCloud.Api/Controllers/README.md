@@ -7,7 +7,7 @@ public class CheckoutIntegrationController
 
 	public CheckoutIntegrationController(IShipMethodCalculator shipMethodCalculator, ITaxCalculator taxCalculator, ICreditCardProcessor creditCardProcessor)
 	{
-		... // assign here
+		// assign here
 	}
 
 	[HttpPost, Route("shippingrates"), OrderCloudWebhookAuth] // route and method specified by OrderCloud platform
