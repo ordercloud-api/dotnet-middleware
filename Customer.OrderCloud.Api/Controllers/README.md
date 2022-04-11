@@ -5,7 +5,7 @@ public class CheckoutIntegrationController
 	private readonly ITaxCalculator _taxCalculator;
 	private readonly ICreditCardProcessor _creditCardProcessor;
 
-	public CheckoutIntegrationController(... // inject here)
+	public CheckoutIntegrationController(IShipMethodCalculator shipMethodCalculator, ITaxCalculator taxCalculator, ICreditCardProcessor creditCardProcessor)
 	{
 		... // assign here
 	}
