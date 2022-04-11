@@ -1,11 +1,11 @@
 ```c#	
 public class CheckoutIntegrationController
 {
-	private readonly IShipMethodCalculator _shipMethodCalculator;
+	private readonly IShippingEstimator _shippingEstimator;
 	private readonly ITaxCalculator _taxCalculator;
 	private readonly ICreditCardProcessor _creditCardProcessor;
 
-	public CheckoutIntegrationController(IShipMethodCalculator shipMethodCalculator, ITaxCalculator taxCalculator, ICreditCardProcessor creditCardProcessor)
+	public CheckoutIntegrationController(IShippingEstimator shippingEstimator, ITaxCalculator taxCalculator, ICreditCardProcessor creditCardProcessor)
 	{
 		// assign here
 	}
@@ -14,7 +14,7 @@ public class CheckoutIntegrationController
 	public async Task<ShipEstimateResponse> GetShippingRates([FromBody] OrderCalculatePayload<CheckoutConfig> payload)
 	{
 		// ...
-		var rates = _shipMethodCalculator.CalculateShipMethodsAsync(packageList);
+		var rates = _shippingEstimator.CalculateShipMethodsAsync(packageList);
 		// ...
 	}
 
