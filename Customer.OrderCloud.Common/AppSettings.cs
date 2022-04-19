@@ -1,10 +1,15 @@
-﻿namespace Catalyst.Common
+﻿using OrderCloud.Catalyst.Shipping.EasyPost;
+using OrderCloud.Catalyst.Tax.Avalara;
+
+namespace Catalyst.Common
 {
 	public class AppSettings
 	{
 		public OrderCloudSettings OrderCloudSettings { get; set; } = new OrderCloudSettings();
 		public ServiceBusSettings ServiceBusSettings { get; set; } = new ServiceBusSettings();
         public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
+		public EasyPostConfig EasyPostSettings { get; set; } = new EasyPostConfig();
+		public AvalaraConfig AvalaraSettings { get; set; } = new AvalaraConfig();
 	}
 
 	public class ServiceBusSettings
