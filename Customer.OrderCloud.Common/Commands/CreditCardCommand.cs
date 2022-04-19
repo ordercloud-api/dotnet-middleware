@@ -47,7 +47,7 @@ namespace Customer.OrderCloud.Common.Commands
 			var savedCard = await _creditCardSaver.CreateSavedCardAsync(customer, card);
 			if (!customerRecordExists)
 			{
-				var patch = new PartialUser<MeUserXp>() { xp = new { PaymentProcessorCustomerID = paymentProcessorCustomerID } };
+				var patch = new PartialUser<MeUserWithXp>() { xp = new { PaymentProcessorCustomerID = paymentProcessorCustomerID } };
 				await _oc.Users.PatchAsync(shopper.Buyer.ID, shopper.ID, patch);
 			}
 			return savedCard;

@@ -5,13 +5,6 @@ using System.Text;
 
 namespace Customer.OrderCloud.Common.Models
 {
-    public class PaymentWithXp : Payment<PaymentXp, PaymentTransaction> { }
-
-    public class PaymentXp
-    {
-        public PCISafeCardDetails SafeCardDetails { get; set; }
-    }
-
     public class CreditCardPayment
     {
         public OrderDirection OrderDirection { get; set; }

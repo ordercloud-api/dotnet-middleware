@@ -5,26 +5,21 @@ using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Customer.OrderCloud.Common.Commands
 {
-    // Data configured in OrderCloud to be passed to all Checkout Integration Events as Payload.ConfigData
-    public class CheckoutConfig
-    {
-        public string MyProperty { get; set; }
-    }
-
     public interface ICheckoutCommand
     {
-        Task<ShipEstimateResponse> EstimateShippingAsync(OrderCalculatePayload<CheckoutConfig> payload);
-		Task<OrderCalculateResponse> RecalculateOrderAsync(OrderCalculatePayload<CheckoutConfig> payload);
+        Task<ShipEstimateResponseWithXp> EstimateShippingAsync(OrderCalculatePayloadWithXp payload);
+		Task<OrderCalculateResponseWithXp> RecalculateOrderAsync(OrderCalculatePayloadWithXp payload);
         Task<List<SavedCreditCard>> ListSavedCreditCardsAsync();
 		Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID);
-        Task<OrderSubmitResponse> ProcessSubmittedOrderAsync(OrderCalculatePayload<CheckoutConfig> payload);
+        Task<OrderSubmitResponseWithXp> ProcessSubmittedOrderAsync(OrderCalculatePayloadWithXp payload);
     }
 
     public class CheckoutCommand : ICheckoutCommand
@@ -56,14 +51,85 @@ namespace Customer.OrderCloud.Common.Commands
             _authentication = authentication;
         }
 
-        public async Task<ShipEstimateResponse> EstimateShippingAsync(OrderCalculatePayload<CheckoutConfig> payload)
+        public async Task<ShipEstimateResponseWithXp> EstimateShippingAsync(OrderCalculatePayloadWithXp payload)
         {
+            var shipments = ContainerizeLineItems(payload);
+            var packages = shipments.Select(shipment => shipment.ShipPackage).ToList();
+            var shipMethodOptions = await _shippingCalculator.CalculateShipMethodsAsync(packages);
+			var response = new ShipEstimateResponseWithXp()
+			{
+				ShipEstimates = shipments.Select((shipment, index) =>
+				{
+                    return new ShipEstimateWithXp()
+                    {
+                        ShipMethods = shipMethodOptions[index].Select(sm => (ShipMethodWithXp) sm).ToList(),
+                        ShipEstimateItems = shipment.ShipEstimateItems,
+                        xp = new ShipEstimateXp 
+                        {
+                            ShipPackage = packages[index]
+                        }
+					};
+				}).ToList()
+			};
+            return response;
+		}
+
+		private List<ShipPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
+		{
             return null;
+		}
+
+        public async Task<OrderCalculateResponseWithXp> RecalculateOrderAsync(OrderCalculatePayloadWithXp payload)
+		{
+            var summary = MapOrderToTaxSummary(payload);
+            var tax = await _taxCalculator.CalculateEstimateAsync(summary);
+            var response = new OrderCalculateResponseWithXp()
+            {
+                TaxTotal = tax.TotalTax,
+                xp = new OrderCalculateResponseXp
+				{
+                    TaxDetails = tax
+                }
+            };
+            return response;
         }
 
-        public async Task<OrderCalculateResponse> RecalculateOrderAsync(OrderCalculatePayload<CheckoutConfig> payload)
+        private OrderSummaryForTax MapOrderToTaxSummary(OrderCalculatePayloadWithXp payload)
         {
-            return null;
+            var taxDetails = new OrderSummaryForTax()
+            {
+                OrderID = payload.OrderWorksheet.Order.ID,
+                CustomerCode = payload.OrderWorksheet.Order.FromUserID,
+                PromotionDiscount = 0,
+                LineItems = payload.OrderWorksheet.LineItems.Select(li =>
+                {
+                    return new LineItemSummaryForTax()
+                    {
+                        LineItemID = li.ID,
+                        ProductID = li.ProductID,
+                        ProductName = li.Product.Name,
+                        Quantity = li.Quantity,
+                        UnitPrice = li.UnitPrice ?? 0,
+                        PromotionDiscount = li.PromotionDiscount,
+                        LineTotal = li.LineTotal,
+                        TaxCode = li.Product.xp.TaxCode,
+                        ShipFrom = li.ShipFromAddress,
+                        ShipTo = li.ShippingAddress
+                    };
+                }).ToList(),
+                ShipEstimates = payload.OrderWorksheet.ShipEstimateResponse.ShipEstimates.Select(se =>
+                {
+                    var selectedMethod = se.GetSelectedShipMethod();
+                    return new ShipEstimateSummaryForTax()
+                    {
+                        ShipEstimateID = se.ID,
+                        Description = selectedMethod.Name,
+                        Cost = selectedMethod.Cost,
+
+                    };
+                }).ToList()
+            };
+            return taxDetails;
         }
 
         public async Task<List<SavedCreditCard>> ListSavedCreditCardsAsync()
@@ -81,16 +147,16 @@ namespace Customer.OrderCloud.Common.Commands
 			{
                 if (ccPayment.SaveCardDetailsForFutureUse)
 				{
-                    // using a new CC and saving it
+                    // entering a new CC and saving it
                     safeCardDetails = await _creditCardCommand.CreateSavedCardAsync(shopper, ccPayment.CardDetails);
                 } else
 				{
-                    // one-time use of CC
+                    // one time use of CC
                     safeCardDetails = ccPayment.CardDetails; 
                 }
 			} else if (ccPayment.SavedCardID != null)
 			{
-                // using a saved CC
+                // selecting a saved CC
                 safeCardDetails = await _creditCardCommand.GetSavedCardAsync(shopper, ccPayment.SavedCardID);
             } else
 			{
@@ -116,7 +182,7 @@ namespace Customer.OrderCloud.Common.Commands
             return null;
         }
 
-        public async Task<OrderSubmitResponse> ProcessSubmittedOrderAsync(OrderCalculatePayload<CheckoutConfig> payload)
+        public async Task<OrderSubmitResponseWithXp> ProcessSubmittedOrderAsync(OrderCalculatePayloadWithXp payload)
 		{
             return null;
         }

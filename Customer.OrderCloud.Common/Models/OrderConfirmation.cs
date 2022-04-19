@@ -7,7 +7,7 @@ namespace Customer.OrderCloud.Common.Models
 {
     public class OrderConfirmation
     {
-        public OrderWorksheet OrderWorksheet { get; set; }
-        public List<Payment> Payments { get; set; }
+        public OrderWorksheetWithXp OrderWorksheet { get; set; }
+        public List<PaymentWithXp> Payments { get; set; }
     }
 }
