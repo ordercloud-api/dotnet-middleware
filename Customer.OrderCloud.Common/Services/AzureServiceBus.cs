@@ -35,7 +35,6 @@ namespace Catalyst.Common.Services
                 var afterMinutesUtc = DateTime.UtcNow.AddMinutes((double)afterMinutes);
                 await sender.SendMessageAsync(new ServiceBusMessage(messageBytes) { ScheduledEnqueueTime = afterMinutesUtc });
             }
-
         }
     }
 }

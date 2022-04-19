@@ -10,7 +10,7 @@ using Catalyst.Common;
 using OrderCloud.Catalyst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Catalyst.Common.Services;
-using Catalyst.Common.Commands;
+using Customer.OrderCloud.Common.Commands;
 
 namespace Catalyst.Api
 {
@@ -53,7 +53,8 @@ namespace Catalyst.Api
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
 				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
-				.AddSingleton<ICheckoutIntegrationCommand, CheckoutIntegrationCommand>()
+				.AddSingleton<ICheckoutCommand, CheckoutCommand>()
+				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });
