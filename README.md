@@ -3,7 +3,7 @@ Starter .NET server-side integration project for [Ordercloud](https://ordercloud
 
 #### Why do I need middleware? 
 
-Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware.
+One major reason is that developers need a secure environement to integrate with other software vendors. Building an OrderCloud ecommerce app can systems like ERPs, email automators, shippers, tax calculators, payment processors and others. These integrations are generally built using a handful of middleware patterns - a webhook callback from OrderCloud, a proxy route called from the browser, or a scheduled job. Its almost certain your ecommerce solution will require middleware.
 
 ### [Start an API from Scratch](./Guides/SetupApi.md)
 
