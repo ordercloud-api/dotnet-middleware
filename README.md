@@ -1,5 +1,5 @@
 # dotnet-middleware
-Boilerplate .NET middleware project for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
+Starter .NET middleware project for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
 #### Why do I need middleware? 
 
