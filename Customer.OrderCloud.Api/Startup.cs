@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Catalyst.Common;
 using OrderCloud.Catalyst;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Catalyst.Common.Services;
 using Customer.OrderCloud.Common.Commands;
 using OrderCloud.Catalyst.Shipping.EasyPost;

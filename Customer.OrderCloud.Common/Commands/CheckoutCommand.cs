@@ -14,12 +14,12 @@ namespace Customer.OrderCloud.Common.Commands
 {
     public interface ICheckoutCommand
     {
-        Task<ShipEstimateResponseWithXp> EstimateShippingAsync(OrderCalculatePayloadWithXp payload);
-		Task<OrderCalculateResponseWithXp> RecalculateOrderAsync(OrderCalculatePayloadWithXp payload);
+        Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
+		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
         Task<List<SavedCreditCard>> ListSavedCreditCardsAsync();
 		Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID);
-        Task<OrderSubmitResponseWithXp> ProcessSubmittedOrderAsync(OrderCalculatePayloadWithXp payload);
+        Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
     }
 
     public class CheckoutCommand : ICheckoutCommand
@@ -51,7 +51,7 @@ namespace Customer.OrderCloud.Common.Commands
             _authentication = authentication;
         }
 
-        public async Task<ShipEstimateResponseWithXp> EstimateShippingAsync(OrderCalculatePayloadWithXp payload)
+        public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload)
         {
             var shipments = ContainerizeLineItems(payload);
             var packages = shipments.Select(shipment => shipment.ShipPackage).ToList();
@@ -79,7 +79,7 @@ namespace Customer.OrderCloud.Common.Commands
             return null;
 		}
 
-        public async Task<OrderCalculateResponseWithXp> RecalculateOrderAsync(OrderCalculatePayloadWithXp payload)
+        public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload)
 		{
             var summary = MapOrderToTaxSummary(payload);
             var tax = await _taxCalculator.CalculateEstimateAsync(summary);
@@ -182,7 +182,7 @@ namespace Customer.OrderCloud.Common.Commands
             return null;
         }
 
-        public async Task<OrderSubmitResponseWithXp> ProcessSubmittedOrderAsync(OrderCalculatePayloadWithXp payload)
+        public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload)
 		{
             return null;
         }

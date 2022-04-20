@@ -27,19 +27,18 @@ namespace Catalyst.Api.Controllers
 			_checkoutCommand = checkoutCommand; // Inject a command class to hold my custom logic
 		}
 
-
 		[HttpPost, Route("shippingrates")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<ShipEstimateResponseWithXp> EstimateShippingAsync([FromBody] OrderCalculatePayloadWithXp payload)
+		public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync([FromBody] OrderCalculatePayloadWithXp payload)
 		{
-			return await _checkoutCommand.EstimateShippingAsync(payload);
+			return await _checkoutCommand.EstimateShippingCostsAsync(payload);
 		}
 
 		[HttpPost, Route("ordercalculate")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<OrderCalculateResponseWithXp> RecalculateOrderAsync([FromBody] OrderCalculatePayloadWithXp payload)
+		public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync([FromBody] OrderCalculatePayloadWithXp payload)
 		{
-			return await _checkoutCommand.RecalculateOrderAsync(payload);
+			return await _checkoutCommand.RecalculatePricesAndTaxAsync(payload);
 		}
 
 		[HttpPost, Route("card-payment")]
@@ -58,9 +57,9 @@ namespace Catalyst.Api.Controllers
 
 		[HttpPost, Route("ordersubmit")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<OrderSubmitResponseWithXp> ProcessSubmittedOrderAsync([FromBody] OrderCalculatePayloadWithXp payload)
+		public async Task<OrderSubmitResponseWithXp> PostSubmitProcessingAsync([FromBody] OrderCalculatePayloadWithXp payload)
 		{
-			return await _checkoutCommand.ProcessSubmittedOrderAsync(payload);
+			return await _checkoutCommand.ProcessOrderPostSubmitAsync(payload);
 		}
 	}
 }
