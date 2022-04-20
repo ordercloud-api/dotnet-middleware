@@ -7,6 +7,7 @@ One major reason is that developers need a secure environement to integrate with
 - A webhook callback from OrderCloud 
 - A proxy route called from the browser
 - A scheduled job. 
+
 Its almost certain your ecommerce solution will require middleware and use all these patterns.
 
 ### [Start an API from Scratch](./Guides/SetupApi.md)
