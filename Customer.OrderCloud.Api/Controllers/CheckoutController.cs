@@ -27,6 +27,7 @@ namespace Catalyst.Api.Controllers
 			_checkoutCommand = checkoutCommand; // Inject a command class to hold my custom logic
 		}
 
+		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("shippingrates")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
 		public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync([FromBody] OrderCalculatePayloadWithXp payload)
@@ -34,6 +35,7 @@ namespace Catalyst.Api.Controllers
 			return await _checkoutCommand.EstimateShippingCostsAsync(payload);
 		}
 
+		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("ordercalculate")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
 		public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync([FromBody] OrderCalculatePayloadWithXp payload)
@@ -41,6 +43,7 @@ namespace Catalyst.Api.Controllers
 			return await _checkoutCommand.RecalculatePricesAndTaxAsync(payload);
 		}
 
+		// Hit from Storefront Client
 		[HttpPost, Route("card-payment")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
 		public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment)
@@ -48,6 +51,7 @@ namespace Catalyst.Api.Controllers
 			return await _checkoutCommand.CreateCreditCardPaymentAsync(payment);
 		}
 
+		// Hit from Storefront Client
 		[HttpPost, Route("order/{orderID}/submit")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
 		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
@@ -55,6 +59,7 @@ namespace Catalyst.Api.Controllers
 			return await _checkoutCommand.SubmitOrderAsync(orderID);
 		}
 
+		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("ordersubmit")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
 		public async Task<OrderSubmitResponseWithXp> PostSubmitProcessingAsync([FromBody] OrderCalculatePayloadWithXp payload)

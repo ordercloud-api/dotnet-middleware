@@ -17,7 +17,7 @@ namespace Customer.OrderCloud.Common.Commands
         Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
 		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
         Task<List<SavedCreditCard>> ListSavedCreditCardsAsync();
-		Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
+	    Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID);
         Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
     }
@@ -26,9 +26,9 @@ namespace Customer.OrderCloud.Common.Commands
     {
         private readonly AppSettings _settings;
         private readonly IOrderCloudClient _oc;
-		private readonly IAzureServiceBus _serviceBus;
+	    private readonly IAzureServiceBus _serviceBus;
         private readonly IShipMethodCalculator _shippingCalculator;
-		private readonly ITaxCalculator _taxCalculator;
+	    private readonly ITaxCalculator _taxCalculator;
         private readonly ICreditCardCommand _creditCardCommand;
         private readonly RequestAuthenticationService _authentication;
 
@@ -56,10 +56,10 @@ namespace Customer.OrderCloud.Common.Commands
             var shipments = ContainerizeLineItems(payload);
             var packages = shipments.Select(shipment => shipment.ShipPackage).ToList();
             var shipMethodOptions = await _shippingCalculator.CalculateShipMethodsAsync(packages);
-			var response = new ShipEstimateResponseWithXp()
-			{
-				ShipEstimates = shipments.Select((shipment, index) =>
-				{
+	        var response = new ShipEstimateResponseWithXp()
+	        {
+	    	    ShipEstimates = shipments.Select((shipment, index) =>
+		        {
                     return new ShipEstimateWithXp()
                     {
                         ShipMethods = shipMethodOptions[index].Select(sm => (ShipMethodWithXp) sm).ToList(),
@@ -68,16 +68,16 @@ namespace Customer.OrderCloud.Common.Commands
                         {
                             ShipPackage = packages[index]
                         }
-					};
-				}).ToList()
-			};
+		            };
+		        }).ToList()
+	        };
             return response;
-		}
+	    }
 
-		private List<ShipPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
-		{
-            return null;
-		}
+	    private List<ShipPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
+	    {
+                return null;
+	    }
 
         public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload)
 		{
@@ -87,7 +87,7 @@ namespace Customer.OrderCloud.Common.Commands
             {
                 TaxTotal = tax.TotalTax,
                 xp = new OrderCalculateResponseXp
-				{
+		{
                     TaxDetails = tax
                 }
             };
@@ -133,7 +133,7 @@ namespace Customer.OrderCloud.Common.Commands
         }
 
         public async Task<List<SavedCreditCard>> ListSavedCreditCardsAsync()
-		{
+	{
             var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
             var cards = await _creditCardCommand.ListSavedCardsAsync(shopper);
             return cards;
@@ -144,41 +144,41 @@ namespace Customer.OrderCloud.Common.Commands
             var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
             PCISafeCardDetails safeCardDetails;
             if (ccPayment.CardDetails != null)
-			{
+            {
                 if (ccPayment.SaveCardDetailsForFutureUse)
-				{
+                {
                     // entering a new CC and saving it
                     safeCardDetails = await _creditCardCommand.CreateSavedCardAsync(shopper, ccPayment.CardDetails);
                 } else
-				{
+                {
                     // one time use of CC
-                    safeCardDetails = ccPayment.CardDetails; 
+                    safeCardDetails = ccPayment.CardDetails;
                 }
-			} else if (ccPayment.SavedCardID != null)
-			{
+            } else if (ccPayment.SavedCardID != null)
+            {
                 // selecting a saved CC
                 safeCardDetails = await _creditCardCommand.GetSavedCardAsync(shopper, ccPayment.SavedCardID);
             } else
-			{
+            {
                 throw new CatalystBaseException("PaymentDetailsMissing", "Create credit card payment must have either non-null CardDetails or SavedCardID", null, HttpStatusCode.BadRequest);
-			}
-			var payment = new PaymentWithXp()
-			{
-				Type = PaymentType.CreditCard,
-				Amount = ccPayment.Amount,
-				Accepted = false,
-				xp = new PaymentXp()
-				{
-					SafeCardDetails = safeCardDetails
+	        }
+	        var payment = new PaymentWithXp()
+	        {
+		        Type = PaymentType.CreditCard,
+		        Amount = ccPayment.Amount,
+		        Accepted = false,
+		        xp = new PaymentXp()
+		        {
+			        SafeCardDetails = safeCardDetails
                 }
-			};
+	        };
             var createdPayment = await _oc.Payments.CreateAsync<PaymentWithXp>(ccPayment.OrderDirection, ccPayment.OrderID, payment);
             return createdPayment;
             // TODO - think about if payment already exists
         }
 
-		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
-		{
+        public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
+        {
             return null;
         }
 
