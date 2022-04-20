@@ -1,9 +1,14 @@
 # dotnet-middleware
-Boilerplate .NET middleware project for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
+Starter .NET server-side integration project for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
 #### Why do I need middleware? 
 
-Developers building OrderCloud ecommerce apps often use a server-side project for a variety of features. For example, secure integrations with 3rd parties like payment processors, scheduled jobs that sync data like product imports, custom event triggered emails, and others. Its almost certain your ecommerce solution will require middleware.
+One major reason is a secure environment to integrate OrderCloud with other software vendors. A full ecommerce solution often involves systems like an ERP (as a source of products and destination for orders), an email automator, a shipper, a tax calculator, a payment processor and others. In an OrderCloud solution these integrations are generally built with variations on 3 middleware patterns
+- A webhook callback from OrderCloud 
+- A proxy route called from the browser
+- A scheduled job. 
+
+Its almost certain your ecommerce solution will require middleware and use all these patterns.
 
 ### [Start an API from Scratch](./Guides/SetupApi.md)
 
@@ -13,19 +18,19 @@ Learn how to stand up a hosted middleware API from scratch.
 
 Learn how to hook custom logic into any Ordercloud API request with Webhooks.
 
-### [Checkout Integrations for Commerce](./Catalyst.Api/Controllers/CheckoutIntegrationController.cs) 
+### [Checkout Integrations for Commerce](./Customer.OrderCloud.Api/Controllers/CheckoutIntegrationController.cs) 
  
 Learn how to plug in your preferred shipping, tax, and payment processing partners to Ordercloud.
 
-### [Import Product Data](./Catalyst.Common/Jobs/ProductUpload)
+### [Import Product Data](./Customer.OrderCloud.Common/Jobs/ProductUpload)
 
 Learn how to import a product catalog to Ordercloud and keep it in sync with updates.
 
-### [Forward Submitted Orders](./Catalyst.Common/Jobs/ForwardOrder) 
+### [Forward Submitted Orders](./Customer.OrderCloud.Common/Jobs/ForwardOrder) 
 
 Learn how to forward orders captured in ordercloud to a downstream system that handles fulfillment.
 
-### [Proxy an API endpoint to extend functionality](./Catalyst.Api/Controllers/ProxyListOrdersController.cs)
+### [Proxy an API endpoint to extend functionality](./Customer.OrderCloud.Api/Controllers/ProxyListOrdersController.cs)
 
 Learn how to wrap an Ordercloud endpoint in your own hosted API to perform logic in a secure environment. 
 
