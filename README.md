@@ -3,7 +3,7 @@ Starter .NET server-side integration project for [Ordercloud](https://ordercloud
 
 #### Why do I need middleware? 
 
-One major reason is that developers need a secure environement to integrate with other software vendors. Building an OrderCloud ecommerce app often involves systems like an ERP, email automator, shipper, tax calculator, payment processor and others. These integrations are generally built with variations on 3 middleware patterns
+One major reason is a secure environment to integrate OrderCloud with other software vendors. A full ecommerce solution often involves systems like an ERP (as a source of products and destination for orders), an email automator, a shipper, a tax calculator, a payment processor and others. In an OrderCloud solution these integrations are generally built with variations on 3 middleware patterns
 - A webhook callback from OrderCloud 
 - A proxy route called from the browser
 - A scheduled job. 
