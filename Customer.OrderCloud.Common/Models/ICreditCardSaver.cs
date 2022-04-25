@@ -17,11 +17,11 @@ namespace Customer.OrderCloud.Common.Models
 
 	public class PaymentSystemCustomer
 	{
-		public bool CustomerRecordExists { get; set; }
 		public string ID { get; set; }
 		public string Email { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
+		public bool CustomerAlreadyExists { get; set; }
 	}
 
 	public class SavedCreditCard : PCISafeCardDetails
