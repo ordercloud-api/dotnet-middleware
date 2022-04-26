@@ -16,7 +16,6 @@ namespace Customer.OrderCloud.Common.Commands
 		Task<PCISafeCardDetails> CreateSavedCardAsync(MeUserWithXp shopper, PCISafeCardDetails card);
 		Task<PaymentWithXp> AuthorizeCardPayment(OrderWorksheetWithXp worksheet, PaymentWithXp payment);
 		Task<PaymentWithXp> VoidCardPayment(string orderID, PaymentWithXp payment);
-
 	}
 
 	public class CreditCardCommand : ICreditCardCommand
@@ -24,8 +23,9 @@ namespace Customer.OrderCloud.Common.Commands
 		private readonly ICreditCardSaver _creditCardSaver;
 		private readonly ICreditCardProcessor _creditCardProcessor;
 		private readonly IOrderCloudClient _oc;
-		public CreditCardCommand(ICreditCardSaver creditCardSaver, IOrderCloudClient oc)
+		public CreditCardCommand(ICreditCardSaver creditCardSaver, IOrderCloudClient oc, ICreditCardProcessor creditCardProcessor)
 		{
+			_creditCardProcessor = creditCardProcessor;
 			_creditCardSaver = creditCardSaver;
 			_oc = oc;
 		}
@@ -71,6 +71,8 @@ namespace Customer.OrderCloud.Common.Commands
 
 		public async Task<PaymentWithXp> AuthorizeCardPayment(OrderWorksheetWithXp worksheet, PaymentWithXp payment)
 		{
+			//TODO - probably some checks 
+
 			var authorizeRequest = new AuthorizeCCTransaction()
 			{
 				OrderID = worksheet.Order.ID,
@@ -123,6 +125,8 @@ namespace Customer.OrderCloud.Common.Commands
 
 		public async Task<PaymentWithXp> VoidCardPayment(string orderID, PaymentWithXp payment)
 		{
+			//TODO - probably some checks 
+
 			var transaction = payment.Transactions
 				.Where(x => x.Type == PaymentTransactionType.Authorization.ToString())
 				.OrderBy(x => x.DateExecuted)
@@ -151,6 +155,5 @@ namespace Customer.OrderCloud.Common.Commands
 			});
 			return updatedPayment;
 		}
-
 	}
 }
