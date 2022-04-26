@@ -79,10 +79,10 @@ namespace Customer.OrderCloud.Common.Commands
 				AddressVerification = worksheet.Order.BillingAddress,
 				CustomerIPAddress = "",
 			};
-			var payWithSavedCard = payment?.xp?.SafeCardDetails?.ID != null;
+			var payWithSavedCard = payment?.xp?.SafeCardDetails?.ProcessorSavedCardID != null;
 			if (payWithSavedCard)
 			{
-				authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.ID;
+				authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.ProcessorSavedCardID;
 				authorizeRequest.ProcessorCustomerID = worksheet.Order.FromUser.xp.PaymentProcessorCustomerID;
 			}
 			else

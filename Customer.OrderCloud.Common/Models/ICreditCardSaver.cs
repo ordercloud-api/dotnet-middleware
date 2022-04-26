@@ -29,7 +29,7 @@ namespace Customer.OrderCloud.Common.Models
 		/// <summary>
 		/// Null if card hasn't been saved yet.
 		/// </summary>
-		public string ID { get; set; }
+		public string ProcessorSavedCardID { get; set; }
 		public string Token { get; set; }
 		public string CardHolderName { get; set; }
 		[MaxLength(4, ErrorMessage = "Invalid partial number: Must be 4 digits. Ex: 4111")]
