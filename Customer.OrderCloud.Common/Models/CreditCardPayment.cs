@@ -7,7 +7,6 @@ namespace Customer.OrderCloud.Common.Models
 {
     public class CreditCardPayment
     {
-        public OrderDirection OrderDirection { get; set; }
         public string OrderID { get; set; }
         // in the currency on the order object
         public decimal Amount { get; set; }

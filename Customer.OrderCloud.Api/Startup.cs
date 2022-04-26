@@ -10,8 +10,8 @@ using Catalyst.Common;
 using OrderCloud.Catalyst;
 using Catalyst.Common.Services;
 using Customer.OrderCloud.Common.Commands;
-using OrderCloud.Catalyst.Shipping.EasyPost;
-using OrderCloud.Catalyst.Tax.Avalara;
+using OrderCloud.Integrations.Shipping.EasyPost;
+using OrderCloud.Integrations.Tax.Avalara;
 
 namespace Catalyst.Api
 {
@@ -56,8 +56,8 @@ namespace Catalyst.Api
 				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
 				.AddSingleton<ICheckoutCommand, CheckoutCommand>()
 				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
-				.AddSingleton<IShipMethodCalculator>(new EasyPostCommand(_settings.EasyPostSettings))
-				.AddSingleton<ITaxCalculator>(new AvalaraCommand(_settings.AvalaraSettings))
+				.AddSingleton<IShippingRatesCalculator>(new EasyPostService(_settings.EasyPostSettings))
+				.AddSingleton<ITaxCalculator>(new AvalaraService(_settings.AvalaraSettings))
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });

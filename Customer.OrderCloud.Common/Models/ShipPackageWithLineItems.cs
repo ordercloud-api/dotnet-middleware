@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Customer.OrderCloud.Common.Models
 {
-	public class ShipPackageWithLineItems
+	public class ShippingPackageWithLineItems
 	{
-		public ShipPackage ShipPackage { get; set; }
+		public ShippingPackage ShipPackage { get; set; }
 		public IList<ShipEstimateItem> ShipEstimateItems { get; set; }
 	}
 }

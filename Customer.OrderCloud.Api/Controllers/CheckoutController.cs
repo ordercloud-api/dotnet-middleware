@@ -18,7 +18,7 @@ namespace Catalyst.Api.Controllers
 	// Set HashKey to match match settings.OrderCloudSettings.WebhookHashKey.
 	// Set ConfigData to any object you want passed into all requests as payload.ConfigData. 
 	// Set ElevatedRoles to roles that payload.OrderCloudAccessToken should have. 
-	public class CheckoutController
+	public class CheckoutController: CatalystController
 	{
 		private readonly ICheckoutCommand _checkoutCommand;
 
@@ -56,7 +56,7 @@ namespace Catalyst.Api.Controllers
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
 		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
 		{
-			return await _checkoutCommand.SubmitOrderAsync(orderID);
+			return await _checkoutCommand.SubmitOrderAsync(orderID, UserContext);
 		}
 
 		// Hit from OC Integration Event Webhook

@@ -16,9 +16,9 @@ namespace Customer.OrderCloud.Common.Commands
     {
         Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
 		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
-        Task<List<SavedCreditCard>> ListSavedCreditCardsAsync();
+        Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync();
 	    Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
-        Task<OrderConfirmation> SubmitOrderAsync(string orderID);
+        Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken);
         Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
     }
 
@@ -27,7 +27,7 @@ namespace Customer.OrderCloud.Common.Commands
         private readonly AppSettings _settings;
         private readonly IOrderCloudClient _oc;
 	    private readonly IAzureServiceBus _serviceBus;
-        private readonly IShipMethodCalculator _shippingCalculator;
+        private readonly IShippingRatesCalculator _shippingCalculator;
 	    private readonly ITaxCalculator _taxCalculator;
         private readonly ICreditCardCommand _creditCardCommand;
         private readonly RequestAuthenticationService _authentication;
@@ -36,8 +36,8 @@ namespace Customer.OrderCloud.Common.Commands
             IOrderCloudClient oc, 
             AppSettings settings, 
             IAzureServiceBus serviceBus, 
-            ITaxCalculator taxCalculator, 
-            IShipMethodCalculator shippingCalculator,
+            ITaxCalculator taxCalculator,
+            IShippingRatesCalculator shippingCalculator,
             ICreditCardCommand creditCardCommand,
             RequestAuthenticationService authentication
             )
@@ -55,14 +55,23 @@ namespace Customer.OrderCloud.Common.Commands
         {
             var shipments = ContainerizeLineItems(payload);
             var packages = shipments.Select(shipment => shipment.ShipPackage).ToList();
-            var shipMethodOptions = await _shippingCalculator.CalculateShipMethodsAsync(packages);
+            var shipMethodOptions = await _shippingCalculator.CalculateShippingRatesAsync(packages);
 	        var response = new ShipEstimateResponseWithXp()
 	        {
 	    	    ShipEstimates = shipments.Select((shipment, index) =>
 		        {
                     return new ShipEstimateWithXp()
                     {
-                        ShipMethods = shipMethodOptions[index].Select(sm => (ShipMethodWithXp) sm).ToList(),
+                        ShipMethods = shipMethodOptions[index].Select(sm => new ShipMethodWithXp() 
+                        {
+                           ID = sm.ID,
+                           Name = sm.Name,
+                           Cost = sm.Cost,
+                           EstimatedTransitDays = sm.EstimatedTransitDays,
+                           xp = new ShipMethodXp() {
+                               Carrier = sm.Carrier
+                           }
+                        }).ToList(),
                         ShipEstimateItems = shipment.ShipEstimateItems,
                         xp = new ShipEstimateXp 
                         {
@@ -74,9 +83,9 @@ namespace Customer.OrderCloud.Common.Commands
             return response;
 	    }
 
-	    private List<ShipPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
+	    private List<ShippingPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
 	    {
-                return null;
+            return null;
 	    }
 
         public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload)
@@ -87,7 +96,7 @@ namespace Customer.OrderCloud.Common.Commands
             {
                 TaxTotal = tax.TotalTax,
                 xp = new OrderCalculateResponseXp
-		{
+		        {
                     TaxDetails = tax
                 }
             };
@@ -117,7 +126,7 @@ namespace Customer.OrderCloud.Common.Commands
                         ShipTo = li.ShippingAddress
                     };
                 }).ToList(),
-                ShipEstimates = payload.OrderWorksheet.ShipEstimateResponse.ShipEstimates.Select(se =>
+                ShippingCosts = payload.OrderWorksheet.ShipEstimateResponse.ShipEstimates.Select(se =>
                 {
                     var selectedMethod = se.GetSelectedShipMethod();
                     return new ShipEstimateSummaryForTax()
@@ -132,8 +141,8 @@ namespace Customer.OrderCloud.Common.Commands
             return taxDetails;
         }
 
-        public async Task<List<SavedCreditCard>> ListSavedCreditCardsAsync()
-	{
+        public async Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync()
+	    {
             var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
             var cards = await _creditCardCommand.ListSavedCardsAsync(shopper);
             return cards;
@@ -172,14 +181,106 @@ namespace Customer.OrderCloud.Common.Commands
 			        SafeCardDetails = safeCardDetails
                 }
 	        };
-            var createdPayment = await _oc.Payments.CreateAsync<PaymentWithXp>(ccPayment.OrderDirection, ccPayment.OrderID, payment);
+            var createdPayment = await _oc.Payments.CreateAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, payment);
             return createdPayment;
-            // TODO - think about if payment already exists
+			// TODO - think about if payment already exists
+		}
+
+		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken)
+		{
+			var worksheet = await _oc.IntegrationEvents.GetWorksheetAsync<OrderWorksheetWithXp>(OrderDirection.All, orderID);
+			var payments = (await _oc.Payments.ListAsync<PaymentWithXp>(OrderDirection.All, orderID)).Items.ToList();
+			await ValidateOrder(worksheet, payments, shopperToken);
+            var ccPayment = payments.First(IsCreditCardPayment); // validate should have thrown an error if this doesn't exist
+
+            ccPayment = await _creditCardCommand.AuthorizeCardPayment(worksheet, ccPayment);
+
+			try
+			{
+				await _oc.Orders.SubmitAsync<OrderWithXp>(OrderDirection.All, orderID, shopperToken.AccessToken);
+                return new OrderConfirmation()
+                {
+                    OrderWorksheet = worksheet,
+                    Payments = payments
+                };
+			}
+			catch (Exception)
+            {
+                await _creditCardCommand.VoidCardPayment(worksheet.Order.ID, ccPayment);
+                throw;
+            }
         }
 
-        public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
-        {
-            return null;
+        private async Task ValidateOrder(OrderWorksheetWithXp worksheet, List<PaymentWithXp> payments, DecodedToken shopperToken)
+		{
+            Require.That(
+               !worksheet.Order.IsSubmitted,
+               new ErrorCode("OrderSubmit.AlreadySubmitted", "Order has already been submitted")
+            );
+            Require.That(
+                worksheet.OrderCalculateResponse != null &&
+                worksheet.OrderCalculateResponse.HttpStatusCode == 200 &&
+                worksheet?.OrderCalculateResponse?.xp != null &&
+                worksheet?.OrderCalculateResponse?.xp.TaxDetails != null,
+                new ErrorCode("OrderSubmit.OrderCalculateError", "A problem occurred during Order Calculation.  Please go back to the cart and try to checkout again.")
+            );
+
+            var shipMethodsWithoutSelections = worksheet?.ShipEstimateResponse?.ShipEstimates?.Where(estimate => estimate.SelectedShipMethodID == null);
+            Require.That(
+                worksheet?.ShipEstimateResponse != null &&
+                shipMethodsWithoutSelections.Count() == 0,
+                new ErrorCode("OrderSubmit.MissingShippingSelections", "All shipments on an order must have a selection"), shipMethodsWithoutSelections
+			);
+
+			Require.That(
+			    payments.Exists(IsCreditCardPayment),
+			    new ErrorCode("OrderSubmit.MissingPayment", "Order must include credit card payment details")
+			);
+            var inactiveLineItems = await FindInactiveLineItems(worksheet, shopperToken.AccessToken);
+            Require.That(
+                !inactiveLineItems.Any(),
+                new ErrorCode("OrderSubmit.InvalidProducts", "Order contains line items for products that are inactive"), inactiveLineItems
+            );
+            try
+            {
+                // ordercloud validates the same stuff that would be checked on order submit
+                await _oc.Orders.ValidateAsync(OrderDirection.Incoming, worksheet.Order.ID);
+
+                // TODO - check promotions and pricing are still valid per OC-Platform conversation with Miranda.
+            }
+            catch (OrderCloudException ex)
+            {
+                // this error is expected and will be resolved before oc order submit call happens
+                var errors = ex.Errors.Where(ex => ex.ErrorCode != "Order.CannotSubmitWithUnacceptedPayments");
+                if (errors.Any())
+                {
+                    throw new CatalystBaseException(new ApiError
+                    {
+                        ErrorCode = "OrderSubmit.OrderCloudValidationError",
+                        Message = "Failed ordercloud validation, see Data for details",
+                        Data = errors
+                    });
+                }
+            }
+        }
+
+        private bool IsCreditCardPayment(PaymentWithXp payment) => payment.Type == PaymentType.CreditCard && payment.xp.SafeCardDetails.Token != null;
+
+        private async Task<List<LineItemWithXp>> FindInactiveLineItems(OrderWorksheetWithXp worksheet, string userToken)
+		{
+			List<LineItemWithXp> inactiveLineItems = new List<LineItemWithXp>();
+            await Throttler.RunAsync(worksheet.LineItems, 100, 8, async lineItem =>
+            {
+                try
+                {
+                    await _oc.Me.GetProductAsync(lineItem.ProductID, accessToken: userToken);
+                }
+                catch (OrderCloudException ex) when (ex.HttpStatus == HttpStatusCode.NotFound)
+                {
+                    inactiveLineItems.Add(lineItem);
+                }
+            });
+            return inactiveLineItems;
         }
 
         public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload)

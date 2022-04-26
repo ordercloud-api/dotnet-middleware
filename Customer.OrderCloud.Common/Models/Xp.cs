@@ -82,12 +82,12 @@ namespace Customer.OrderCloud.Common.Models
 
 	public class ShipEstimateXp
 	{
-		public ShipPackage ShipPackage { get; set; }
+		public ShippingPackage ShipPackage { get; set; }
 	}
 
 	public class ShipMethodXp
 	{
-
+		public string Carrier { get; set; }
 	}
 
 	public class OrderCalculateResponseXp
@@ -117,6 +117,6 @@ namespace Customer.OrderCloud.Common.Models
 
 	public class PaymentTransactionXp
 	{
-
+		public CCTransactionResult TransactionDetails { get; set; }
 	}
 }

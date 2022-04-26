@@ -1,5 +1,5 @@
-﻿using OrderCloud.Catalyst.Shipping.EasyPost;
-using OrderCloud.Catalyst.Tax.Avalara;
+﻿using OrderCloud.Integrations.Shipping.EasyPost;
+using OrderCloud.Integrations.Tax.Avalara;
 
 namespace Catalyst.Common
 {
