@@ -149,9 +149,10 @@ namespace Customer.OrderCloud.Common.Commands
         }
 
         public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment ccPayment)
-        {
-            var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
-            PCISafeCardDetails safeCardDetails;
+		{
+			var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
+            
+			PCISafeCardDetails safeCardDetails;
             if (ccPayment.CardDetails != null)
             {
                 if (ccPayment.SaveCardDetailsForFutureUse)
@@ -169,7 +170,7 @@ namespace Customer.OrderCloud.Common.Commands
                 safeCardDetails = await _creditCardCommand.GetSavedCardAsync(shopper, ccPayment.SavedCardID);
             } else
             {
-                throw new CatalystBaseException("PaymentDetailsMissing", "Create credit card payment must have either non-null CardDetails or SavedCardID", null, HttpStatusCode.BadRequest);
+                throw new CatalystBaseException(MyErrorCodes.Payment.DetailsMissing);
 	        }
 	        var payment = new PaymentWithXp()
 	        {
@@ -206,43 +207,37 @@ namespace Customer.OrderCloud.Common.Commands
 			}
 			catch (Exception)
             {
-                await _creditCardCommand.VoidCardPayment(worksheet.Order.ID, ccPayment);
+                await _creditCardCommand.VoidOrRefundCardPayment(worksheet.Order.ID, ccPayment);
                 throw;
             }
         }
 
         private async Task ValidateOrder(OrderWorksheetWithXp worksheet, List<PaymentWithXp> payments, DecodedToken shopperToken)
 		{
-            Require.That(
-               !worksheet.Order.IsSubmitted,
-               new ErrorCode("OrderSubmit.AlreadySubmitted", "Order has already been submitted")
-            );
+            Require.That(!worksheet.Order.IsSubmitted, MyErrorCodes.OrderSubmit.AlreadySubmitted);
             Require.That(
                 worksheet.OrderCalculateResponse != null &&
                 worksheet.OrderCalculateResponse.HttpStatusCode == 200 &&
                 worksheet?.OrderCalculateResponse?.xp != null &&
                 worksheet?.OrderCalculateResponse?.xp.TaxDetails != null,
-                new ErrorCode("OrderSubmit.OrderCalculateError", "A problem occurred during Order Calculation.  Please go back to the cart and try to checkout again.")
+                MyErrorCodes.OrderSubmit.OrderCalculateError
             );
 
             var shipMethodsWithoutSelections = worksheet?.ShipEstimateResponse?.ShipEstimates?.Where(estimate => estimate.SelectedShipMethodID == null);
             Require.That(
                 worksheet?.ShipEstimateResponse != null &&
                 shipMethodsWithoutSelections.Count() == 0,
-                new ErrorCode("OrderSubmit.MissingShippingSelections", "All shipments on an order must have a selection"), shipMethodsWithoutSelections
-			);
-
-			Require.That(
-			    payments.Exists(IsCreditCardPayment),
-			    new ErrorCode("OrderSubmit.MissingPayment", "Order must include credit card payment details")
-			);
-            var inactiveLineItems = await FindInactiveLineItems(worksheet, shopperToken.AccessToken);
-            Require.That(
-                !inactiveLineItems.Any(),
-                new ErrorCode("OrderSubmit.InvalidProducts", "Order contains line items for products that are inactive"), inactiveLineItems
+                MyErrorCodes.OrderSubmit.MissingShippingSelections,
+                shipMethodsWithoutSelections
             );
-            try
-            {
+
+            Require.That(payments.Exists(IsCreditCardPayment), MyErrorCodes.OrderSubmit.MissingPayment);
+
+            var inactiveLineItems = await FindInactiveLineItems(worksheet, shopperToken.AccessToken);
+			Require.That(!inactiveLineItems.Any(), MyErrorCodes.OrderSubmit.InvalidProducts, inactiveLineItems);
+
+			try
+			{
                 // ordercloud validates the same stuff that would be checked on order submit
                 await _oc.Orders.ValidateAsync(OrderDirection.Incoming, worksheet.Order.ID);
 
@@ -252,15 +247,7 @@ namespace Customer.OrderCloud.Common.Commands
             {
                 // this error is expected and will be resolved before oc order submit call happens
                 var errors = ex.Errors.Where(ex => ex.ErrorCode != "Order.CannotSubmitWithUnacceptedPayments");
-                if (errors.Any())
-                {
-                    throw new CatalystBaseException(new ApiError
-                    {
-                        ErrorCode = "OrderSubmit.OrderCloudValidationError",
-                        Message = "Failed ordercloud validation, see Data for details",
-                        Data = errors
-                    });
-                }
+                Require.That(!errors.Any(), MyErrorCodes.OrderSubmit.OrderCloudValidationError, errors);
             }
         }
 

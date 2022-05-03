@@ -46,6 +46,14 @@ namespace Catalyst.Api.Controllers
 		// Hit from Storefront Client
 		[HttpPost, Route("card-payment")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
+		public async Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync()
+		{
+			return await _checkoutCommand.ListSavedCreditCardsAsync();
+		}
+
+		// Hit from Storefront Client
+		[HttpPost, Route("card-payment")]
+		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
 		public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment)
 		{
 			return await _checkoutCommand.CreateCreditCardPaymentAsync(payment);

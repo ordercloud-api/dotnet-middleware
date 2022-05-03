@@ -11,7 +11,7 @@ namespace Customer.OrderCloud.Common.Models
 	{
 		Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
 		Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
-		Task<PCISafeCardDetails> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
+		Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card, OCIntegrationConfig configOverride = null);
 		Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null);
 	}
 
@@ -24,12 +24,18 @@ namespace Customer.OrderCloud.Common.Models
 		public bool CustomerAlreadyExists { get; set; }
 	}
 
+	public class CardCreatedResponse
+	{
+		public PCISafeCardDetails Card { get; set; }
+		public string CustomerID { get; set; }
+	}
+
 	public class PCISafeCardDetails
 	{
 		/// <summary>
-		/// Null if card hasn't been saved yet.
+		/// Null if card is not saved in processor
 		/// </summary>
-		public string ProcessorSavedCardID { get; set; }
+		public string SavedCardID { get; set; }
 		public string Token { get; set; }
 		public string CardHolderName { get; set; }
 		[MaxLength(4, ErrorMessage = "Invalid partial number: Must be 4 digits. Ex: 4111")]

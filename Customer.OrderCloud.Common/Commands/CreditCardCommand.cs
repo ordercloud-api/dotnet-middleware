@@ -14,8 +14,10 @@ namespace Customer.OrderCloud.Common.Commands
 		Task<List<PCISafeCardDetails>> ListSavedCardsAsync(MeUserWithXp shopper);
 		Task<PCISafeCardDetails> GetSavedCardAsync(MeUserWithXp shopper, string cardID);
 		Task<PCISafeCardDetails> CreateSavedCardAsync(MeUserWithXp shopper, PCISafeCardDetails card);
+		Task DeleteSavedCardASync(MeUserWithXp shopper, string cardID);
 		Task<PaymentWithXp> AuthorizeCardPayment(OrderWorksheetWithXp worksheet, PaymentWithXp payment);
-		Task<PaymentWithXp> VoidCardPayment(string orderID, PaymentWithXp payment);
+		Task<PaymentWithXp> CaptureCardPayment(string orderID, PaymentWithXp payment);
+		Task<PaymentWithXp> VoidOrRefundCardPayment(string orderID, PaymentWithXp payment);
 	}
 
 	public class CreditCardCommand : ICreditCardCommand
@@ -30,38 +32,10 @@ namespace Customer.OrderCloud.Common.Commands
 			_oc = oc;
 		}
 
-		public async Task<PCISafeCardDetails> GetSavedCardAsync(MeUserWithXp shopper, string cardID)
-		{
-			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
-			var card = await _creditCardSaver.GetSavedCardAsync(customerID, cardID);
-			return card;
-		}
-
-
-		public async Task<PCISafeCardDetails> CreateSavedCardAsync(MeUserWithXp shopper, PCISafeCardDetails card)
-		{
-			var customerRecordExists = shopper?.xp?.PaymentProcessorCustomerID != null;
-			var paymentProcessorCustomerID = $"{shopper.Buyer.ID}-{shopper.ID}";
-			var customer = new PaymentSystemCustomer()
-			{
-				ID = shopper?.xp?.PaymentProcessorCustomerID ?? paymentProcessorCustomerID,
-				Email = shopper.Email,
-				FirstName = shopper.FirstName,
-				LastName = shopper.LastName,
-				CustomerAlreadyExists = customerRecordExists,
-			};
-			var savedCard = await _creditCardSaver.CreateSavedCardAsync(customer, card);
-			if (!customerRecordExists)
-			{
-				var patch = new PartialUser<MeUserWithXp>() { xp = new { PaymentProcessorCustomerID = paymentProcessorCustomerID } };
-				await _oc.Users.PatchAsync(shopper.Buyer.ID, shopper.ID, patch);
-			}
-			return savedCard;
-		}
-
 		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(MeUserWithXp shopper)
 		{
-			if (shopper?.xp?.PaymentProcessorCustomerID == null)
+			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
+			if (customerID == null)
 			{
 				return new List<PCISafeCardDetails>();
 			}
@@ -69,10 +43,46 @@ namespace Customer.OrderCloud.Common.Commands
 			return savedCards;
 		}
 
+		public async Task<PCISafeCardDetails> GetSavedCardAsync(MeUserWithXp shopper, string cardID)
+		{
+			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
+			if (customerID == null)
+			{
+				return null;
+			}
+			var card = await _creditCardSaver.GetSavedCardAsync(customerID, cardID);
+			return card;
+		}
+
+		public async Task<PCISafeCardDetails> CreateSavedCardAsync(MeUserWithXp shopper, PCISafeCardDetails card)
+		{
+			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
+			var customer = new PaymentSystemCustomer()
+			{
+				ID = shopper?.xp?.PaymentProcessorCustomerID, // cannot assume customer ID is set-able
+				Email = shopper.Email,
+				FirstName = shopper.FirstName,
+				LastName = shopper.LastName,
+				CustomerAlreadyExists = customerID != null,
+			};
+			var savedCard = await _creditCardSaver.CreateSavedCardAsync(customer, card);
+			if (!customer.CustomerAlreadyExists)
+			{
+				var patch = new PartialUser<MeUserWithXp>() { xp = new { PaymentProcessorCustomerID = savedCard.CustomerID } };
+				await _oc.Users.PatchAsync(shopper.Buyer.ID, shopper.ID, patch);
+			}
+			return savedCard.Card;
+		}
+
+		public async Task DeleteSavedCardASync(MeUserWithXp shopper, string cardID)
+		{
+			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
+			await _creditCardSaver.DeleteSavedCardAsync(customerID, cardID);
+		}
+
 		public async Task<PaymentWithXp> AuthorizeCardPayment(OrderWorksheetWithXp worksheet, PaymentWithXp payment)
 		{
 			//TODO - probably some checks 
-
 			var authorizeRequest = new AuthorizeCCTransaction()
 			{
 				OrderID = worksheet.Order.ID,
@@ -81,10 +91,10 @@ namespace Customer.OrderCloud.Common.Commands
 				AddressVerification = worksheet.Order.BillingAddress,
 				CustomerIPAddress = "",
 			};
-			var payWithSavedCard = payment?.xp?.SafeCardDetails?.ProcessorSavedCardID != null;
+			var payWithSavedCard = payment?.xp?.SafeCardDetails?.SavedCardID != null;
 			if (payWithSavedCard)
 			{
-				authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.ProcessorSavedCardID;
+				authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
 				authorizeRequest.ProcessorCustomerID = worksheet.Order.FromUser.xp.PaymentProcessorCustomerID;
 			}
 			else
@@ -93,67 +103,83 @@ namespace Customer.OrderCloud.Common.Commands
 			}
 
 			var authorizationResult = await _creditCardProcessor.AuthorizeOnlyAsync(authorizeRequest);
-			if (authorizationResult.Succeeded)
-			{
-				await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, worksheet.Order.ID, payment.ID, new PartialPayment { Accepted = true, Amount = authorizeRequest.Amount });
-				var updatedPayment = await _oc.Payments.CreateTransactionAsync<PaymentWithXp>(OrderDirection.All, worksheet.Order.ID, payment.ID, new PaymentTransactionWithXp()
-				{
-					ID = authorizationResult.TransactionID,
-					Amount = payment.Amount,
-					DateExecuted = DateTime.Now,
-					ResultCode = authorizationResult.AuthorizationCode,
-					ResultMessage = authorizationResult.Message,
-					Succeeded = authorizationResult.Succeeded,
-					Type = PaymentTransactionType.Authorization.ToString(),
-					xp = new PaymentTransactionXp
-					{
-						TransactionDetails = authorizationResult,
-					}
-				});
-				return updatedPayment;
-			}
-			else
-			{
-				throw new CatalystBaseException(new ApiError()
-				{
-					Data = authorizationResult,
-					Message = authorizationResult.Message,
-					ErrorCode = $"Payment.AuthorizeDidNotSucceed"
-				});
-			}
+
+			Require.That(authorizationResult.Succeeded, MyErrorCodes.Payment.AuthorizationFailed, authorizationResult);
+
+			await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, worksheet.Order.ID, payment.ID, new PartialPayment { Accepted = true, Amount = authorizeRequest.Amount });
+			var updatedPayment = await CreatePaymentTransaction(worksheet.Order.ID, payment, PaymentTransactionType.Authorization, authorizationResult);
+			return updatedPayment;
 		}
 
-		public async Task<PaymentWithXp> VoidCardPayment(string orderID, PaymentWithXp payment)
+		public async Task<PaymentWithXp> CaptureCardPayment(string orderID, PaymentWithXp payment)
 		{
-			//TODO - probably some checks 
-
-			var transaction = payment.Transactions
-				.Where(x => x.Type == PaymentTransactionType.Authorization.ToString())
-				.OrderBy(x => x.DateExecuted)
-				.LastOrDefault(t => t.Succeeded);
-
-			// What if void fails? Put it in a support queue for manual intervention.
-			var voidResult = await _creditCardProcessor.VoidAuthorizationAsync(new FollowUpCCTransaction()
+			var authorizationTransaction = GetLastSuccessfulTransactionOfType(PaymentTransactionType.Authorization, payment);
+			Require.That(authorizationTransaction != null, MyErrorCodes.Payment.CannotCapture, payment);
+			var captureResult = await _creditCardProcessor.CapturePriorAuthorizationAsync(new FollowUpCCTransaction()
 			{
-				TransactionID = transaction.ID,
-				Amount = transaction.Amount ?? 0
+				Amount = payment.Amount ?? 0,
+				TransactionID = authorizationTransaction.ID
 			});
+			var updatedPayment = await CreatePaymentTransaction(orderID, payment, PaymentTransactionType.Capture, captureResult);
 
+			return updatedPayment;
+		}
+
+		public async Task<PaymentWithXp> VoidOrRefundCardPayment(string orderID, PaymentWithXp payment)
+		{
+			var authorizationTransaction = GetLastSuccessfulTransactionOfType(PaymentTransactionType.Authorization, payment);
+			if (authorizationTransaction == null)
+			{
+				return payment;
+			}
+			var isCaptured = payment.Transactions.Any(x => x.Type == PaymentTransactionType.Capture.ToString());
+			Func<FollowUpCCTransaction, OCIntegrationConfig, Task<CCTransactionResult>> reverseMethod;
+			if (isCaptured)
+			{
+				reverseMethod = _creditCardProcessor.RefundCaptureAsync;
+			} else
+			{
+				reverseMethod = _creditCardProcessor.VoidAuthorizationAsync;
+			}
+
+			var reverseTransactionResult = await reverseMethod(new FollowUpCCTransaction()
+			{
+				TransactionID = authorizationTransaction.ID,
+				Amount = authorizationTransaction.Amount ?? 0
+			}, null);
+
+			var type = isCaptured ? PaymentTransactionType.Refund : PaymentTransactionType.Void;
+
+			var updatedPayment = await CreatePaymentTransaction(orderID, payment, type, reverseTransactionResult);
+			return updatedPayment;
+		}
+
+		private async Task<PaymentWithXp> CreatePaymentTransaction(string orderID, PaymentWithXp payment, PaymentTransactionType type, CCTransactionResult transaction)
+		{
 			var updatedPayment = await _oc.Payments.CreateTransactionAsync<PaymentWithXp>(OrderDirection.All, orderID, payment.ID, new PaymentTransactionWithXp()
 			{
-				ID = voidResult.TransactionID,
+				ID = transaction.TransactionID,
 				Amount = payment.Amount,
 				DateExecuted = DateTime.Now,
-				ResultCode = voidResult.AuthorizationCode,
-				ResultMessage = voidResult.Message,
-				Succeeded = voidResult.Succeeded,
-				Type = PaymentTransactionType.Void.ToString(),
+				ResultCode = transaction.AuthorizationCode,
+				ResultMessage = transaction.Message,
+				Succeeded = transaction.Succeeded,
+				Type = type.ToString(),
 				xp = new PaymentTransactionXp
 				{
-					TransactionDetails = voidResult,
+					TransactionDetails = transaction,
 				}
 			});
 			return updatedPayment;
+		}
+
+		private PaymentTransactionWithXp GetLastSuccessfulTransactionOfType(PaymentTransactionType type, PaymentWithXp payment)
+		{
+			var authorizationTransaction = payment.Transactions
+				.Where(x => x.Type == type.ToString())
+				.OrderBy(x => x.DateExecuted)
+				.LastOrDefault(t => t.Succeeded);
+			return authorizationTransaction;
 		}
 	}
 }
