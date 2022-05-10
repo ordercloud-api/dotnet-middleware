@@ -157,20 +157,37 @@ namespace Customer.OrderCloud.Common.Commands
             } else
             {
                 throw new CatalystBaseException(MyErrorCodes.Payment.DetailsMissing);
-	        }
-	        var payment = new PaymentWithXp()
-	        {
-		        Type = PaymentType.CreditCard,
-		        Amount = ccPayment.Amount,
-		        Accepted = false,
-		        xp = new PaymentXp()
-		        {
-			        SafeCardDetails = safeCardDetails
-                }
-	        };
-            var createdPayment = await _oc.Payments.CreateAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, payment);
-            return createdPayment;
-			// TODO - think about if payment already exists
+			}
+
+
+			var payments = (await _oc.Payments.ListAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID)).Items.ToList();
+			var existingCCPayment = payments.FirstOrDefault(IsCreditCardPayment);
+            if (existingCCPayment == null)
+			{
+                var payment = new PaymentWithXp()
+                {
+                    Type = PaymentType.CreditCard,
+                    Amount = ccPayment.Amount,
+                    Accepted = false,
+                    xp = new PaymentXp()
+                    {
+                        SafeCardDetails = safeCardDetails
+                    }
+                };
+                return await _oc.Payments.CreateAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, payment);
+            } else
+			{
+                var payment = new PartialPayment()
+                {
+                    Amount = ccPayment.Amount,
+                    Accepted = false,
+                    xp = new PaymentXp()
+                    {
+                        SafeCardDetails = safeCardDetails
+                    }
+                };
+                return await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, existingCCPayment.ID, payment);
+            }
 		}
 
 		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken)
