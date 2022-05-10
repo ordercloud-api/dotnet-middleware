@@ -12,6 +12,7 @@ using Catalyst.Common.Services;
 using Customer.OrderCloud.Common.Commands;
 using OrderCloud.Integrations.Shipping.EasyPost;
 using OrderCloud.Integrations.Tax.Avalara;
+using OrderCloud.Integrations.Payment.BlueSnap;
 
 namespace Catalyst.Api
 {
@@ -25,6 +26,8 @@ namespace Catalyst.Api
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
+			var blueSnapSerivce = new BlueSnapService(_settings.BlueSnapSettings);
+				
 			services
 				.AddControllers()
 				.ConfigureApiBehaviorOptions(o =>
@@ -58,6 +61,8 @@ namespace Catalyst.Api
 				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
 				.AddSingleton<IShippingRatesCalculator>(new EasyPostService(_settings.EasyPostSettings))
 				.AddSingleton<ITaxCalculator>(new AvalaraService(_settings.AvalaraSettings))
+				.AddSingleton<ICreditCardProcessor>(blueSnapSerivce)
+				.AddSingleton<ICreditCardSaver>(blueSnapSerivce)
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });

@@ -32,7 +32,7 @@ namespace Customer.OrderCloud.Common.Commands
 			_oc = oc;
 		}
 
-		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(MeUserWithXp shopper)
+		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(MeUserWithXp shopper = null)
 		{
 			var customerID = shopper?.xp?.PaymentProcessorCustomerID;
 			if (customerID == null)
@@ -94,12 +94,12 @@ namespace Customer.OrderCloud.Common.Commands
 			var payWithSavedCard = payment?.xp?.SafeCardDetails?.SavedCardID != null;
 			if (payWithSavedCard)
 			{
-				authorizeRequest.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
+				authorizeRequest.CardDetails.SavedCardID = payment.xp.SafeCardDetails.SavedCardID;
 				authorizeRequest.ProcessorCustomerID = worksheet.Order.FromUser.xp.PaymentProcessorCustomerID;
 			}
 			else
 			{
-				authorizeRequest.CardToken = payment?.xp?.SafeCardDetails?.Token;
+				authorizeRequest.CardDetails.Token = payment?.xp?.SafeCardDetails?.Token;
 			}
 
 			var authorizationResult = await _creditCardProcessor.AuthorizeOnlyAsync(authorizeRequest);

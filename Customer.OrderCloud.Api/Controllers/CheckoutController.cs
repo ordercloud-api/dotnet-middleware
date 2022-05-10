@@ -21,58 +21,46 @@ namespace Catalyst.Api.Controllers
 	public class CheckoutController: CatalystController
 	{
 		private readonly ICheckoutCommand _checkoutCommand;
+		private readonly IOrderCloudClient _oc;
 
-		public CheckoutController(ICheckoutCommand checkoutCommand)
+		public CheckoutController(ICheckoutCommand checkoutCommand, IOrderCloudClient oc)
 		{
-			_checkoutCommand = checkoutCommand; // Inject a command class to hold my custom logic
+			_checkoutCommand = checkoutCommand; // Inject a command class to hold custom logic
+			_oc = oc;
 		}
 
 		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("shippingrates")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync([FromBody] OrderCalculatePayloadWithXp payload)
-		{
-			return await _checkoutCommand.EstimateShippingCostsAsync(payload);
-		}
+		public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync([FromBody] OrderCalculatePayloadWithXp payload) =>
+			await _checkoutCommand.EstimateShippingCostsAsync(payload);
+
 
 		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("ordercalculate")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync([FromBody] OrderCalculatePayloadWithXp payload)
-		{
-			return await _checkoutCommand.RecalculatePricesAndTaxAsync(payload);
-		}
+		public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync([FromBody] OrderCalculatePayloadWithXp payload) =>
+			await _checkoutCommand.RecalculatePricesAndTaxAsync(payload);
 
 		// Hit from Storefront Client
-		[HttpPost, Route("card-payment")]
-		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
-		public async Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync()
-		{
-			return await _checkoutCommand.ListSavedCreditCardsAsync();
-		}
-
-		// Hit from Storefront Client
-		[HttpPost, Route("card-payment")]
+		[HttpPost, Route("me/card-payment")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
 		public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment)
 		{
-			return await _checkoutCommand.CreateCreditCardPaymentAsync(payment);
+			var shopper = await _oc.Me.GetAsync<MeUserWithXp>(UserContext.AccessToken);
+			return await _checkoutCommand.CreateCreditCardPaymentAsync(shopper, payment);
 		}
-
+			
 		// Hit from Storefront Client
 		[HttpPost, Route("order/{orderID}/submit")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
-		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID)
-		{
-			return await _checkoutCommand.SubmitOrderAsync(orderID, UserContext);
-		}
+		public async Task<OrderConfirmation> SubmitOrderAsync(string orderID) =>
+			await _checkoutCommand.SubmitOrderAsync(orderID, UserContext);
 
 		// Hit from OC Integration Event Webhook
 		[HttpPost, Route("ordersubmit")] // route and method specified by OrderCloud platform
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task<OrderSubmitResponseWithXp> PostSubmitProcessingAsync([FromBody] OrderCalculatePayloadWithXp payload)
-		{
-			return await _checkoutCommand.ProcessOrderPostSubmitAsync(payload);
-		}
+		public async Task<OrderSubmitResponseWithXp> PostSubmitProcessingAsync([FromBody] OrderCalculatePayloadWithXp payload) =>
+			await _checkoutCommand.ProcessOrderPostSubmitAsync(payload);
 	}
 }

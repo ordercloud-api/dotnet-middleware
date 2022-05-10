@@ -20,7 +20,7 @@ namespace Customer.OrderCloud.Common.Models
 			{ "OrderSubmit.MissingPayment", new ErrorCode("OrderSubmit.MissingPayment", "Order must include credit card payment details.", HttpStatusCode.BadRequest) },
 			{ "OrderSubmit.InvalidProducts", new ErrorCode("OrderSubmit.InvalidProducts", "Order contains line items for products that are inactive.", HttpStatusCode.BadRequest) },
 			{ "OrderSubmit.OrderCloudValidationError", new ErrorCode("OrderSubmit.OrderCloudValidationError", "Failed ordercloud validation, see Data for details.", HttpStatusCode.BadRequest) },
-
+			{ "OrderSubmit.PricesHaveChanged", new ErrorCode("OrderSubmit.PricesHaveChanged", "Did not submit order because prices have changed. Please review latest order details and re-submit.", HttpStatusCode.BadRequest) },
 		};
 
 		public static class Payment
@@ -38,6 +38,7 @@ namespace Customer.OrderCloud.Common.Models
 			public static readonly ErrorCode MissingPayment = All["OrderSubmit.MissingPayment"];
 			public static readonly ErrorCode<List<LineItemWithXp>> InvalidProducts = All["OrderSubmit.InvalidProducts"] as ErrorCode<List<LineItemWithXp>>;
 			public static readonly ErrorCode<IEnumerable<ApiError>> OrderCloudValidationError = All["OrderSubmit.OrderCloudValidationError"] as ErrorCode<IEnumerable<ApiError>>;
+			public static readonly ErrorCode PricesHaveChanged = All["OrderSubmit.PricesHaveChanged"];
 		}
 	}
 }

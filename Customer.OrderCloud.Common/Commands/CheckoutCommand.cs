@@ -16,8 +16,7 @@ namespace Customer.OrderCloud.Common.Commands
     {
         Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
 		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
-        Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync();
-	    Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment);
+	    Task<PaymentWithXp> CreateCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken);
         Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
     }
@@ -30,7 +29,6 @@ namespace Customer.OrderCloud.Common.Commands
         private readonly IShippingRatesCalculator _shippingCalculator;
 	    private readonly ITaxCalculator _taxCalculator;
         private readonly ICreditCardCommand _creditCardCommand;
-        private readonly RequestAuthenticationService _authentication;
 
         public CheckoutCommand(
             IOrderCloudClient oc, 
@@ -38,9 +36,7 @@ namespace Customer.OrderCloud.Common.Commands
             IAzureServiceBus serviceBus, 
             ITaxCalculator taxCalculator,
             IShippingRatesCalculator shippingCalculator,
-            ICreditCardCommand creditCardCommand,
-            RequestAuthenticationService authentication
-            )
+            ICreditCardCommand creditCardCommand)
         {
             _serviceBus = serviceBus;
             _oc = oc;
@@ -48,7 +44,6 @@ namespace Customer.OrderCloud.Common.Commands
             _taxCalculator = taxCalculator;
             _shippingCalculator = shippingCalculator;
             _creditCardCommand = creditCardCommand;
-            _authentication = authentication;
         }
 
         public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload)
@@ -141,17 +136,8 @@ namespace Customer.OrderCloud.Common.Commands
             return taxDetails;
         }
 
-        public async Task<List<PCISafeCardDetails>> ListSavedCreditCardsAsync()
-	    {
-            var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
-            var cards = await _creditCardCommand.ListSavedCardsAsync(shopper);
-            return cards;
-        }
-
-        public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment ccPayment)
-		{
-			var shopper = await _authentication.GetUserAsync<MeUserWithXp>();
-            
+        public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment ccPayment)
+		{            
 			PCISafeCardDetails safeCardDetails;
             if (ccPayment.CardDetails != null)
             {
@@ -231,7 +217,7 @@ namespace Customer.OrderCloud.Common.Commands
                 shipMethodsWithoutSelections
             );
 
-            Require.That(payments.Exists(IsCreditCardPayment), MyErrorCodes.OrderSubmit.MissingPayment);
+            Require.That(payments.Any(IsCreditCardPayment), MyErrorCodes.OrderSubmit.MissingPayment);
 
             var inactiveLineItems = await FindInactiveLineItems(worksheet, shopperToken.AccessToken);
 			Require.That(!inactiveLineItems.Any(), MyErrorCodes.OrderSubmit.InvalidProducts, inactiveLineItems);
@@ -239,9 +225,7 @@ namespace Customer.OrderCloud.Common.Commands
 			try
 			{
                 // ordercloud validates the same stuff that would be checked on order submit
-                await _oc.Orders.ValidateAsync(OrderDirection.Incoming, worksheet.Order.ID);
-
-                // TODO - check promotions and pricing are still valid per OC-Platform conversation with Miranda.
+                await _oc.Orders.ValidateAsync(OrderDirection.All, worksheet.Order.ID);
             }
             catch (OrderCloudException ex)
             {
@@ -249,6 +233,10 @@ namespace Customer.OrderCloud.Common.Commands
                 var errors = ex.Errors.Where(ex => ex.ErrorCode != "Order.CannotSubmitWithUnacceptedPayments");
                 Require.That(!errors.Any(), MyErrorCodes.OrderSubmit.OrderCloudValidationError, errors);
             }
+
+            // Check if expired promotions or price schedule
+            var orderPostValidate = await _oc.Orders.GetAsync(OrderDirection.All, worksheet.Order.ID);
+            Require.That(worksheet.Order.Total == orderPostValidate.Total, MyErrorCodes.OrderSubmit.PricesHaveChanged);
         }
 
         private bool IsCreditCardPayment(PaymentWithXp payment) => payment.Type == PaymentType.CreditCard && payment.xp.SafeCardDetails.Token != null;
