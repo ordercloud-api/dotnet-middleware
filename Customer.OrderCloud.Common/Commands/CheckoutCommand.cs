@@ -256,11 +256,32 @@ namespace Customer.OrderCloud.Common.Commands
                 }
             });
             return inactiveLineItems;
-        }
+		}
 
-        public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload)
+		public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload)
 		{
-            return null;
+			var processes = new PostSubmitProcesses();
+
+            // Will catch any errors so the later processes are still attempted. Error results are stored.
+            await processes.Run("Send Order Confirmation Email", Task.FromResult("..."));
+
+            await processes.Run("Create Final Tax Transaction", _taxCalculator.CommitTransactionAsync(MapOrderToTaxSummary(payload)));
+
+            await processes.Run("Forward Order to ERP system", Task.FromResult("..."));
+
+
+            var anyErrors = processes.AnyErrors;
+            var partialOrder = new PartialOrder() { xp = new { NeedsAttention = anyErrors } };
+            await _oc.Orders.PatchAsync(OrderDirection.All, payload.OrderWorksheet.Order.ID, partialOrder);
+
+            return new OrderSubmitResponseWithXp()
+            {
+                HttpStatusCode = anyErrors ? 500 : 200,
+                xp = new OrderSubmitResponseXp()
+                {
+                    ProcessResults = processes.Results
+                }
+            };
         }
-    }
+	}
 }

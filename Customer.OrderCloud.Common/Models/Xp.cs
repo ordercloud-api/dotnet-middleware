@@ -1,5 +1,6 @@
 ﻿using OrderCloud.Catalyst;
 using OrderCloud.SDK;
+using System.Collections.Generic;
 
 namespace Customer.OrderCloud.Common.Models
 {
@@ -27,8 +28,6 @@ namespace Customer.OrderCloud.Common.Models
 	public class PaymentTransactionWithXp : PaymentTransaction<PaymentTransactionXp> { }
 
 
-
-
 	// Data configured in OrderCloud to be passed to all Checkout Integration Events as Payload.ConfigData
 	public class CheckoutConfig
 	{
@@ -37,7 +36,10 @@ namespace Customer.OrderCloud.Common.Models
 
 	public class OrderXp 
 	{
-
+		/// <summary>
+		/// True if one of the post-submit processes failed
+		/// </summary>
+		public bool NeedsAttention { get; set; }
 	}
 
 	public class UserXp
@@ -97,7 +99,10 @@ namespace Customer.OrderCloud.Common.Models
 
 	public class OrderSubmitResponseXp
 	{
-
+		/// <summary>
+		/// Results of the post-submit processes
+		/// </summary>
+		public List<PostSubmitProcessResult> ProcessResults { get; set; }
 	}
 
 	public class OrderSubmitForApprovalResponseXp
