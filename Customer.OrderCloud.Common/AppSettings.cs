@@ -1,23 +1,23 @@
-﻿namespace Catalyst.Common
+﻿using OrderCloud.Integrations.Payment.BlueSnap;
+using OrderCloud.Integrations.Shipping.EasyPost;
+using OrderCloud.Integrations.Tax.Avalara;
+
+namespace Catalyst.Common
 {
 	public class AppSettings
 	{
 		public OrderCloudSettings OrderCloudSettings { get; set; } = new OrderCloudSettings();
 		public ServiceBusSettings ServiceBusSettings { get; set; } = new ServiceBusSettings();
         public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
-		public RedisSettings RedisSettings { get; set; } = new RedisSettings(); // only need this if you use Redis
+		public EasyPostConfig EasyPostSettings { get; set; } = new EasyPostConfig();
+		public AvalaraConfig AvalaraSettings { get; set; } = new AvalaraConfig();
+		public BlueSnapConfig BlueSnapSettings { get; set; } = new BlueSnapConfig();
 	}
 
 	public class ServiceBusSettings
 	{
 		public string ConnectionString { get; set; }
 		public string OrderProcessingQueueName { get; set; }
-	}
-
-	public class RedisSettings
-	{
-		public string ConnectionString { get; set; }
-		public int DatabaseID { get; set; }
 	}
 
 	public class EnvironmentSettings

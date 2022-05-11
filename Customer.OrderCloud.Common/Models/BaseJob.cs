@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace Catalyst.Functions
 {
+    public enum JobResultCode
+    {
+        Success,
+        TemporaryFailure,
+        PermanentFailure
+    }
+
     //  Base Job class with methods for tracking skipped, succeeded, and failed counts in Jobs
     //  Also includes methods for logging information
     //  Custom job classes can inherit this class and have all these methods available

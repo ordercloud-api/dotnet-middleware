@@ -109,12 +109,6 @@ namespace Catalyst.Functions.Jobs.ForwardOrdersToThirdParty
                 // POST order to third party system here
                 return JobResultCode.Success;
             }
-            catch (CustomException ex)
-            {
-                //  Handle and log exception from your third party System
-                LogFailure($"Third Party Error: {ex.Message} Third Party Code: {ex.ErrorCode} {ex.StackTrace}");
-                return IsTransientError(ex.HttpStatus) ? JobResultCode.TemporaryFailure : JobResultCode.PermanentFailure;
-            }
             catch (OrderCloudException ex)
             {
                 //  Handle and log exception from OrderCloud
