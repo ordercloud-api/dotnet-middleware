@@ -18,7 +18,7 @@ Learn how to stand up a hosted middleware API from scratch.
 
 Learn how to hook custom logic into any Ordercloud API request with Webhooks.
 
-### [Checkout Integrations for Commerce](./Customer.OrderCloud.Api/Controllers/CheckoutIntegrationController.cs) 
+### [Checkout Integrations for Commerce](./Customer.OrderCloud.Api/Controllers/CheckoutController.cs) 
  
 Learn how to plug in your preferred shipping, tax, and payment processing partners to Ordercloud.
 
