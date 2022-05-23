@@ -20,7 +20,7 @@ public PreWebhookResponse Task HandleAddressCreate([FromBody] WebhookPayloads.Ad
 	....
 }
 ```
-`OrderCloudWebhookAuth` is a security feature that blocks requests that do not come from OrderCloud webhooks. The parameter type `WebhookPayloads.Addresses.Create` contains detailed info about a Create Address event in OrderCloud. The return type `PreWebhookResponse` lets us to block or allow the continuation of the create address logic in OrderCloud.
+`OrderCloudWebhookAuth` is a security feature that blocks requests that do not come from OrderCloud webhooks. The parameter type `WebhookPayloads.Addresses.Create` contains detailed info about a Create Address event in OrderCloud. The return type `PreWebhookResponse` lets us block or allow the continuation of the create address logic in OrderCloud.
 
 ```c#
 public virtual void ConfigureServices(IServiceCollection services) {
