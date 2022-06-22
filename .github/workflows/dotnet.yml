@@ -1,4 +1,4 @@
-name: Deploy to Azure
+name: Build
 
 on:
   workflow_dispatch:
@@ -6,7 +6,9 @@ on:
     branches: [ "dev" ]
     
 env:
-  DOTNET_VERSION: '6.0.x'    
+  DOTNET_VERSION: '6.0.x'
+  API_PROJECT_PATH: './Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj'
+  FOLDER_TO_BUILD_TO: 'Customer.OrderCloud.Api'
 
 jobs:
   build:
@@ -18,10 +20,18 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: ${{env.DOTNET_VERSION}}
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Publish
+      run: dotnet publish ${{API_PROJECT_PATH}} -c Release -o website
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        name: website
+        path: ${{FOLDER_TO_BUILD_TO}}/website/**
+        if-no-files-found: error
