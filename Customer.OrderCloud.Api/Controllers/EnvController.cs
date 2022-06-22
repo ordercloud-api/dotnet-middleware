@@ -1,16 +1,19 @@
 ﻿using Catalyst.Common;
+using Customer.OrderCloud.Common.Commands;
 using Microsoft.AspNetCore.Mvc;
 using OrderCloud.Catalyst;
 
-namespace Catalyst.Api.Controllers
+namespace Customer.OrderCloud.Api.Controllers
 {
 	[Route("api/env")]
 	public class EnvController : CatalystController
 	{
 		private readonly AppSettings _settings;
-		public EnvController(AppSettings settings)
+		private readonly OrderCloudWebhookRouteAnalyser _webhooks;
+		public EnvController(AppSettings settings, OrderCloudWebhookRouteAnalyser webhooks)
 		{
 			_settings = settings;
+			_webhooks = webhooks;
 		}
 
 		[HttpGet("")]
@@ -21,6 +24,12 @@ namespace Catalyst.Api.Controllers
 				_settings.OrderCloudSettings.ApiUrl,
 				_settings.OrderCloudSettings.MiddlewareClientID,
 			};
+		}
+
+		[HttpGet("webhook")]
+		public object GetWebhookConfig()
+		{
+			return _webhooks.AnalyzeProjectWebhookRoutes();
 		}
 	}
 }

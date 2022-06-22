@@ -3,8 +3,9 @@ using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Customer.OrderCloud.Common.Commands;
 
-namespace Catalyst.Api.Controllers
+namespace Customer.OrderCloud.Api.Controllers
 {
 	// This controller demonstrates how to create routes that listen to events from the ordercloud platform, called webhooks.
 	// You can configure Ordercloud to send webhook notifications to your middleware either before (a pre-webook) or after (a post-webhook) any write API request to Ordercloud.  
@@ -23,6 +24,7 @@ namespace Catalyst.Api.Controllers
 		// This example sends a text to purchasers after their orders have been approved.
 		// In ordercloud, configure a post-webhook on the order approve action.
 		[HttpPost("api/webhook/orderapproved")] // Supply this route as the listener.  
+		[OrderCloudWebhook] // This tags the method as a webhook for auto-generated configs
 		[OrderCloudWebhookAuth] // This security feature blocks requests that are not from Ordercloud. Make sure settings.OrderCloudSettings.WebhookHashKey matches whats configured in O.C.  
 		// A post webhook lister needs no return type.
 		public async Task HandleOrderApprove([FromBody] WebhookPayloads.Orders.Approve payload)
@@ -39,8 +41,9 @@ namespace Catalyst.Api.Controllers
 		// This example validates all new addresses that are created.
 		// In ordercloud, configure a pre-webhook on the address create action, and supply this route as the listener.  
 		[HttpPost("api/webhook/createaddress")]
-		[OrderCloudWebhookAuth]
-		// A pre webhook lister should return a type of PreWebhookResponse 
+		[OrderCloudWebhook] // This tags the method as a webhook for auto-generated configs
+		[OrderCloudWebhookAuth] // This security feature blocks requests that are not from Ordercloud. Make sure settings.OrderCloudSettings.WebhookHashKey matches whats configured in O.C.
+								// A pre webhook lister should return a type of PreWebhookResponse 
 		public PreWebhookResponse HandleAddressCreate([FromBody] WebhookPayloads.Addresses.Create payload) 
 		{
 			var address = payload.Request.Body;
