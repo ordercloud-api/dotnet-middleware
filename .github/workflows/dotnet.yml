@@ -1,4 +1,4 @@
-name: Build
+name: Build and Deploy to Azure
 
 on:
   workflow_dispatch:
@@ -9,6 +9,8 @@ env:
   DOTNET_VERSION: '6.0.x'
   API_PROJECT_PATH: './Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj'
   FOLDER_TO_BUILD_TO: 'Customer.OrderCloud.Api'
+  AZURE_APP_NAME: '' # change this to your web app name
+  AZURE_SLOT_NAME: '' # change this to your slot name
 
 jobs:
   build:
@@ -28,10 +30,36 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish ${{API_PROJECT_PATH}} -c Release -o website
+      run: dotnet publish ${{env.API_PROJECT_PATH}} -c Release -o website
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: website
-        path: ${{FOLDER_TO_BUILD_TO}}/website/**
+        path: ${{env.FOLDER_TO_BUILD_TO}}/website/**
         if-no-files-found: error
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: website
+        path: website
+
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy web app
+      id: deploywebapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_APP_NAME }}
+        slot-name: ${{ env.AZURE_SLOT_NAME }}
+        package: website
+        
+    - name: az cli logout
+      run: az logout
