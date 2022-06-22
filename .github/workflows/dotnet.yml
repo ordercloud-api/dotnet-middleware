@@ -6,8 +6,8 @@ on:
     branches: [ "dev" ]
     
 env:
-  AZURE_APP_NAME: '' # change this to your web app name
-  AZURE_SLOT_NAME: '' # change this to your slot name
+  AZURE_APP_NAME: 'headstartdemo-middleware '                                         # change this to your web app name
+  AZURE_SLOT_NAME: 'checkout-integrations'                                            # change this to your slot name
   DOTNET_VERSION: '6.0.x'
   API_PROJECT_PATH: './Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj'
 
@@ -47,18 +47,12 @@ jobs:
         name: website
         path: website
 
-    - name: Login via Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - name: Deploy web app
       id: deploywebapp
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_APP_NAME }}
         slot-name: ${{ env.AZURE_SLOT_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}                   # Define secret variable in repository settings
         package: website
         
-    - name: az cli logout
-      run: az logout
