@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Catalyst.Api.Controllers
+namespace Customer.OrderCloud.Api.Controllers
 {
 	// See an overview of integration events at https://ordercloud.io/knowledge-base/how-to-calculate-tax-with-ordercloud#integration-event
 	// To wire up these listeners in OrderCloud create an IntegrationEvent object of type "OrderCheckout".
@@ -18,6 +18,7 @@ namespace Catalyst.Api.Controllers
 	// Set HashKey to match match settings.OrderCloudSettings.WebhookHashKey.
 	// Set ConfigData to any object you want passed into all requests as payload.ConfigData. 
 	// Set ElevatedRoles to roles that payload.OrderCloudAccessToken should have. 
+	[OrderCloudIntegrationEvent(IntegrationEventType.OrderCheckout)] // This tags the controller as containing an integration event for auto-generated configs
 	public class CheckoutController: CatalystController
 	{
 		private readonly ICheckoutCommand _checkoutCommand;
@@ -43,12 +44,12 @@ namespace Catalyst.Api.Controllers
 			await _checkoutCommand.RecalculatePricesAndTaxAsync(payload);
 
 		// Hit from Storefront Client
-		[HttpPost, Route("me/card-payment")]
+		[HttpPut, Route("me/card-payment")]
 		[OrderCloudUserAuth(ApiRole.Shopper), UserTypeRestrictedTo(CommerceRole.Buyer)]
-		public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(CreditCardPayment payment)
+		public async Task<PaymentWithXp> SetCreditCardPaymentAsync(CreditCardPayment payment)
 		{
 			var shopper = await _oc.Me.GetAsync<MeUserWithXp>(UserContext.AccessToken);
-			return await _checkoutCommand.CreateCreditCardPaymentAsync(shopper, payment);
+			return await _checkoutCommand.SetCreditCardPaymentAsync(shopper, payment);
 		}
 			
 		// Hit from Storefront Client

@@ -3,7 +3,7 @@ using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System.Threading.Tasks;
 
-namespace Catalyst.Api.Controllers
+namespace Customer.OrderCloud.Api.Controllers
 {
 	// This code snippet shows how to proxy an Ordercloud list route. 
 	// Imagine a franchise business with multiple locations. Owners and Employees at a location both place orders. Only Owners should see all orders for their location.

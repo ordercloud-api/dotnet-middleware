@@ -90,6 +90,7 @@ namespace Customer.OrderCloud.Common.Commands
 				Currency = worksheet.Order.Currency,
 				AddressVerification = worksheet.Order.BillingAddress,
 				CustomerIPAddress = "",
+				CardDetails = new PCISafeCardDetails()
 			};
 			var payWithSavedCard = payment?.xp?.SafeCardDetails?.SavedCardID != null;
 			if (payWithSavedCard)
