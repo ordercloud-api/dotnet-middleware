@@ -59,7 +59,6 @@ namespace Customer.OrderCloud.Api
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
 				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
-				.AddSingleton<OrderCloudWebhookRouteAnalyser>()
 				.AddSingleton<ICheckoutCommand, CheckoutCommand>()
 				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
 				.AddSingleton<IShippingRatesCalculator>(new EasyPostService(_settings.EasyPostSettings))

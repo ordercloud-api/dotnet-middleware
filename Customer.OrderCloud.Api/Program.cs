@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Catalyst.Common;
 
-namespace Catalyst.Api
+namespace Customer.OrderCloud.Api
 {
 	public class Program
 	{

@@ -18,7 +18,6 @@ namespace Customer.OrderCloud.Api.Controllers
 	// Set HashKey to match match settings.OrderCloudSettings.WebhookHashKey.
 	// Set ConfigData to any object you want passed into all requests as payload.ConfigData. 
 	// Set ElevatedRoles to roles that payload.OrderCloudAccessToken should have. 
-	[OrderCloudIntegrationEvent(IntegrationEventType.OrderCheckout)] // This tags the controller as containing an integration event for auto-generated configs
 	public class CheckoutController: CatalystController
 	{
 		private readonly ICheckoutCommand _checkoutCommand;
