@@ -12,9 +12,10 @@ using Catalyst.Common.Services;
 using Customer.OrderCloud.Common.Commands;
 using OrderCloud.Integrations.Shipping.EasyPost;
 using OrderCloud.Integrations.Tax.Avalara;
-using OrderCloud.Integrations.Payment.BlueSnap;
+using OrderCloud.Integrations.Payment.Stripe;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace Catalyst.Api
+namespace Customer.OrderCloud.Api
 {
 	public class Startup
 	{
@@ -26,7 +27,7 @@ namespace Catalyst.Api
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public virtual void ConfigureServices(IServiceCollection services) {
-			var blueSnapSerivce = new BlueSnapService(_settings.BlueSnapSettings);
+			var stripeService = new StripeService(_settings.StripeSettings);
 				
 			services
 				.AddControllers()
@@ -47,6 +48,7 @@ namespace Catalyst.Api
 			services.AddCors(o => o.AddPolicy("integrationcors",
 				builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
 			services
+				.AddEndpointsApiExplorer()
 				.AddOrderCloudUserAuth(opts => opts.AddValidClientIDs(_settings.OrderCloudSettings.StorefrontClientID))
 				.AddOrderCloudWebhookAuth(opts => opts.HashKey = _settings.OrderCloudSettings.WebhookHashKey)
 				.AddSingleton<ISimpleCache, LazyCacheService>() // Replace LazyCacheService with RedisService if you have multiple server instances.
@@ -57,12 +59,13 @@ namespace Catalyst.Api
 					ClientSecret = _settings.OrderCloudSettings.MiddlewareClientSecret,
 				}))
 				.AddSingleton<IAzureServiceBus, AzureServiceBus>()
+				.AddSingleton<OrderCloudWebhookRouteAnalyser>()
 				.AddSingleton<ICheckoutCommand, CheckoutCommand>()
 				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
 				.AddSingleton<IShippingRatesCalculator>(new EasyPostService(_settings.EasyPostSettings))
 				.AddSingleton<ITaxCalculator>(new AvalaraService(_settings.AvalaraSettings))
-				.AddSingleton<ICreditCardProcessor>(blueSnapSerivce)
-				.AddSingleton<ICreditCardSaver>(blueSnapSerivce)
+				.AddSingleton<ICreditCardProcessor>(stripeService)
+				.AddSingleton<ICreditCardSaver>(stripeService)
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });

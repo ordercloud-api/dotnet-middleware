@@ -1,4 +1,4 @@
-﻿using OrderCloud.Integrations.Payment.BlueSnap;
+﻿using OrderCloud.Integrations.Payment.Stripe;
 using OrderCloud.Integrations.Shipping.EasyPost;
 using OrderCloud.Integrations.Tax.Avalara;
 
@@ -11,7 +11,7 @@ namespace Catalyst.Common
         public EnvironmentSettings EnvironmentSettings { get; set; } = new EnvironmentSettings();
 		public EasyPostConfig EasyPostSettings { get; set; } = new EasyPostConfig();
 		public AvalaraConfig AvalaraSettings { get; set; } = new AvalaraConfig();
-		public BlueSnapConfig BlueSnapSettings { get; set; } = new BlueSnapConfig();
+		public StripeConfig StripeSettings { get; set; } = new StripeConfig();
 	}
 
 	public class ServiceBusSettings

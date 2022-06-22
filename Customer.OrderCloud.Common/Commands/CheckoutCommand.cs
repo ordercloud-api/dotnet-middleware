@@ -16,7 +16,7 @@ namespace Customer.OrderCloud.Common.Commands
     {
         Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
 		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
-	    Task<PaymentWithXp> CreateCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment payment);
+	    Task<PaymentWithXp> SetCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken);
         Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
     }
@@ -136,12 +136,12 @@ namespace Customer.OrderCloud.Common.Commands
             return taxDetails;
         }
 
-        public async Task<PaymentWithXp> CreateCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment ccPayment)
+        public async Task<PaymentWithXp> SetCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment ccPayment)
 		{            
 			PCISafeCardDetails safeCardDetails;
             if (ccPayment.CardDetails != null)
             {
-                if (ccPayment.SaveCardDetailsForFutureUse)
+                if (ccPayment.SaveCardForFutureUse)
                 {
                     // entering a new CC and saving it
                     safeCardDetails = await _creditCardCommand.CreateSavedCardAsync(shopper, ccPayment.CardDetails);
@@ -150,10 +150,10 @@ namespace Customer.OrderCloud.Common.Commands
                     // one time use of CC
                     safeCardDetails = ccPayment.CardDetails;
                 }
-            } else if (ccPayment.SavedCardID != null)
+            } else if (ccPayment.CardDetails.SavedCardID != null)
             {
                 // selecting a saved CC
-                safeCardDetails = await _creditCardCommand.GetSavedCardAsync(shopper, ccPayment.SavedCardID);
+                safeCardDetails = await _creditCardCommand.GetSavedCardAsync(shopper, ccPayment.CardDetails.SavedCardID);
             } else
             {
                 throw new CatalystBaseException(MyErrorCodes.Payment.DetailsMissing);

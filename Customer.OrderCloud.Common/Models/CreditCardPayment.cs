@@ -9,11 +9,8 @@ namespace Customer.OrderCloud.Common.Models
     public class CreditCardPayment
     {
         public string OrderID { get; set; }
-        // in the currency on the order object
-        public decimal Amount { get; set; }
-        public string SavedCardID { get; set; }
-        // If set, this will take priority over SavedCardID
+        public decimal Amount { get; set; } // in the currency on the order object
         public PCISafeCardDetails CardDetails { get; set; }
-        public bool SaveCardDetailsForFutureUse { get; set; }
+        public bool SaveCardForFutureUse { get; set; }
 	}
 }
