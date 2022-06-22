@@ -6,11 +6,10 @@ on:
     branches: [ "dev" ]
     
 env:
-  DOTNET_VERSION: '6.0.x'
-  API_PROJECT_PATH: './Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj'
-  FOLDER_TO_BUILD_TO: 'Customer.OrderCloud.Api'
   AZURE_APP_NAME: '' # change this to your web app name
   AZURE_SLOT_NAME: '' # change this to your slot name
+  DOTNET_VERSION: '6.0.x'
+  API_PROJECT_PATH: './Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj'
 
 jobs:
   build:
@@ -35,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v2.2.2
       with:
         name: website
-        path: ${{env.FOLDER_TO_BUILD_TO}}/website/**
+        path: ./website/**
         if-no-files-found: error
 
   deploy:
