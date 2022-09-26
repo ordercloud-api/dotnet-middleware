@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 
 Catalyst.WebJobs/appSettings.Development.json
+Customer.OrderCloud.Api/appsettings.local.json
