@@ -1,5 +1,5 @@
 # dotnet-middleware
-Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) extension using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
+Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) extensions using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
 ### Get Project Running With Docker
 
