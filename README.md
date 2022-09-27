@@ -1,14 +1,18 @@
 # dotnet-middleware
-Starter .NET server-side integration project for [Ordercloud](https://ordercloud.io/) using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
+Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) extension using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
-#### Why do I need middleware? 
+### Get Project Running 
 
-One major reason is a secure environment to integrate OrderCloud with other software vendors. A full ecommerce solution often involves systems like an ERP (as a source of products and destination for orders), an email automator, a shipper, a tax calculator, a payment processor and others. In an OrderCloud solution these integrations are generally built with variations on 3 middleware patterns
-- A webhook callback from OrderCloud 
-- A proxy route called from the browser
-- A scheduled job. 
+`docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware` then open http://localhost:3000/api/env in the browser and you should see JSON data for "BuildNumber" and other env variables.
 
-Its almost certain your ecommerce solution will require middleware and use all these patterns.
+### Why do I need middleware? 
+
+OrderCloud is an API that handles commerce, so why do you need your own server-side project? Generally, the reason is that you want to securely extend the functionality of OrderCloud, either with custom logic or with functionality from another service. An ecommerce solution almost always integrates with external systems such as an ERP, a payment processor, an email automator, a shipper, a tax calculator, or others. For this reason, it is almost certain your OrderCloud solution will require middleware. 
+
+OrderCloud middleware is usually built with variations on 3 primary patterns
+- A webhook callback from OrderCloud to your API triggered by certain events
+- A proxy route in your API that is called from the browser and then makes requests to OrderCloud with elevated permissions
+- A scheduled job 
 
 ### [Start an API from Scratch](./Guides/SetupApi.md)
 
