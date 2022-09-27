@@ -1,9 +1,12 @@
 # dotnet-middleware
 Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) extension using the [Dotnet Catalyst](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst) library. 
 
-### Get Project Running 
+### Get Project Running With Docker
 
-`docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware` then open http://localhost:3000/api/env in the browser and you should see JSON data for "BuildNumber" and other env variables.
+Clone the repo and build locally with `docker build -t MyOrderCloudMiddleware .`
+After building, run locally with `docker run -it -p 3000:80 MyOrderCloudMiddleware` then open http://localhost:3000/api/env in the browser and you should see JSON data.
+
+Can also run a static example api from dockerhub with `docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware`.
 
 ### Why do I need middleware? 
 
