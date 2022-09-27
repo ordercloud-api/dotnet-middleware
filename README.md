@@ -3,10 +3,10 @@ Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) exten
 
 ### Get Project Running With Docker
 
-Clone the repo and build locally with `docker build -t MyOrderCloudMiddleware .`
-After building, run locally with `docker run -it -p 3000:80 MyOrderCloudMiddleware` then open http://localhost:3000/api/env in the browser and you should see JSON data.
+- Clone the repo and build locally with `docker build -t MyOrderCloudMiddleware .`
+- After building, run locally with `docker run -it -p 3000:80 MyOrderCloudMiddleware` then open http://localhost:3000/api/env in the browser and you should see JSON data.
 
-Can also run a static example api from dockerhub with `docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware`.
+- Can also run a static example api from dockerhub with `docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware`.
 
 ### Why do I need middleware? 
 
