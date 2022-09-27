@@ -1,12 +1,11 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build
-ENV PROJ_NAME=Customer.OrderCloud.Api
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
 COPY . .
 RUN dotnet restore
-RUN dotnet publish ./${PROJ_NAME}/${PROJ_NAME}.csproj -c Release -o /app/build
+RUN dotnet publish ./Customer.OrderCloud.Api/Customer.OrderCloud.Api.csproj -c release -o /app
 
-EXPOSE 5000
-
-WORKDIR /app/build
-CMD dotnet Customer.OrderCloud.Api.dll --urls "http://localhost:5000"
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "Customer.OrderCloud.Api.dll"]
