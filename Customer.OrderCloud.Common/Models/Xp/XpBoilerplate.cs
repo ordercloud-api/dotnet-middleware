@@ -4,10 +4,10 @@ using OrderCloud.SDK;
 namespace Customer.OrderCloud.Common.Models
 {
 	//    **************************************************************************************
-	//    *  Xp.cs
+	//    *  XpBoilerplate.cs
 	//    *  
-	//    *  This file should be mostly the same for all OrderCloud projects.
-	//    *  It stores boilerplate code out of sight.
+	//    *  Stores boilerplate code for wiring up strongly typed xp. Keeps it out of sight.
+	//    *  Under most OrderCloud marketplace set-ups, these XP patterns should work unchanged.
 	//    *  
 	//    **************************************************************************************
 
