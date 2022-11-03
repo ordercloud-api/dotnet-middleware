@@ -10,7 +10,7 @@ Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) exten
 
 ### Azure
 
-See a working version of this api at https://headstartdemo-middleware-checkout-integrations.azurewebsites.net/index.html
+See a working version of this api at https://headstartdemo-middleware-checkout-integrations.azurewebsites.net/index.html.
 This is built and published to Azure on pushes to dev using a github action. 
 
 ### Why do I need middleware? 
