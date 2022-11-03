@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           # relative path to the place where source code with Dockerfile is located
-          context: ./src/samples/simple
+          context: .
           tags: |
             oliverheywood/ordercloud-dotnet-middleware:latest 
           # build on feature branches, push only on dev branch
