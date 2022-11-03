@@ -4,7 +4,7 @@ Starter .NET microservice project for [Ordercloud](https://ordercloud.io/) exten
 ### Get Project Running With Docker
 
 - Clone the repo and build locally with `docker build -t MyOrderCloudMiddleware .`
-- After building, run locally with `docker run -it -p 3000:80 MyOrderCloudMiddleware` then open http://localhost:3000/api/env in the browser and you should see JSON data.
+- After building, run locally with `docker run -it -p 3000:80 MyOrderCloudMiddleware` then open http://localhost:3000/ in the browser and you should see api route documentation.
 
 - Can also run a static example api from dockerhub with `docker run -it -p 3000:80 oliverheywood/ordercloud-dotnet-middleware`.
 
@@ -25,9 +25,9 @@ Learn how to stand up a hosted middleware API from scratch.
 
 Learn how to hook custom logic into any Ordercloud API request with Webhooks.
 
-### [Checkout Integrations for Commerce](./Customer.OrderCloud.Common/Commands/CheckoutCommand.cs) 
+### [Integration Events](./Customer.OrderCloud.Api/Controllers/IntegrationEventController.cs) 
  
-Learn how to plug in your preferred shipping, tax, and payment processing partners to Ordercloud.
+Learn how to plug in your preferred shipping, tax, and payment processing partners to Ordercloud. Among other integrations.
 
 ### [Import Product Data](./Customer.OrderCloud.Common/Jobs/ProductUpload)
 
