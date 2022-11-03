@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Customer.OrderCloud.Api.Controllers
 {
-	[Route("me/credit-cards")]
+	[Route("api/me/credit-cards")]
 	public class CreditCardController : CatalystController
 	{
 		private readonly ICreditCardCommand _creditCardCommand;

@@ -69,7 +69,6 @@ namespace Customer.OrderCloud.Common.Models
 	public class PaymentTransactionWithXp : PaymentTransaction<PaymentTransactionXp> { }
 	public class SpendingAccountWithXp : SpendingAccount<SpendingAccountXp> { }
 	public class PriceScheduleWithXp : PriceSchedule<PriceScheduleXp> { }
-	public class OrderApprovedResponseWithXp : OrderApprovedResponse<OrderApprovedResponseXp> { }
 	public class ProductFacetWithXp : ProductFacet<ProductFacetXp> { }
 	public class MessageSenderWithXp : MessageSender<MessageSenderXp> { }
 	public class ApiClientWithXp : ApiClient<ApiClientXp> { }
@@ -77,9 +76,14 @@ namespace Customer.OrderCloud.Common.Models
 	public class CatalogWithXp : Catalog<CatalogXp> { }
 	public class CategoryWithXp : Category<CategoryXp> { }
 	public class CostCenterWithXp : CostCenter<CostCenterXp> { }
-	public class OrderSubmitForApprovalResponseWithXp : OrderSubmitForApprovalResponse<OrderSubmitForApprovalResponseXp> { }
 	public class OrderSubmitResponseWithXp : OrderSubmitResponse<OrderSubmitResponseXp> { }
-	public class OrderCalculatePayloadWithXp : OrderCalculatePayload<CheckoutIntegrationConfigData, OrderWithXp, LineItemWithXp, OrderPromotionWithXp, ShipEstimateResponseWithXp, OrderCalculateResponseWithXp, OrderSubmitResponseWithXp, OrderSubmitForApprovalResponseWithXp, OrderApprovedResponseWithXp> { }
+	public class OrderApprovedResponseWithXp : OrderApprovedResponse<OrderSubmitResponseXp> { }
+	public class OrderSubmitForApprovalResponseWithXp : OrderSubmitForApprovalResponse<OrderSubmitResponseXp> { }
+	public class OrderCheckoutIEPayloadWithXp : OrderCheckoutIEPayload<IntegrationEventConfigData, OrderWorksheetWithXp> { }
+	public class AddToCartIEPayloadWithXp : AddToCartIEPayload<IntegrationEventConfigData, UserWithXp> { }
+	public class OpenIDConnectIEPayloadWithXp : OpenIDConnectIEPayload<IntegrationEventConfigData, UserWithXp> { }
+	public class OrderReturnIEPayloadWithXp : OrderReturnIEPayload<OrderReturnWithXp, OrderWorksheetWithXp> { }
+	public class AddToCartResponseWithXp : AddToCartResponse<AdHocProductWithXp> { }
 	#endregion
 
 
@@ -88,7 +92,7 @@ namespace Customer.OrderCloud.Common.Models
 	//    *   Xp partial classes. Do not define your Xp here, define them elsewhere in partial classes.
 	//    **************************************************************************************
 	#region Xp Classes
-	public partial class CheckoutIntegrationConfigData { }
+	public partial class IntegrationEventConfigData { }
 	public partial class AddressXp { }
 	public partial class ShipFromAddressXp { }
 	public partial class InventoryRecordXp { }
@@ -121,7 +125,6 @@ namespace Customer.OrderCloud.Common.Models
 	public partial class PaymentTransactionXp { }
 	public partial class SpendingAccountXp { }
 	public partial class PriceScheduleXp { }
-	public partial class OrderApprovedResponseXp { }
 	public partial class ProductFacetXp { }
 	public partial class MessageSenderXp { }
 	public partial class ApiClientXp { }
@@ -129,7 +132,6 @@ namespace Customer.OrderCloud.Common.Models
 	public partial class CatalogXp { }
 	public partial class CategoryXp { }
 	public partial class CostCenterXp { }
-	public partial class OrderSubmitForApprovalResponseXp { }
 	public partial class OrderSubmitResponseXp { }
 	#endregion
 

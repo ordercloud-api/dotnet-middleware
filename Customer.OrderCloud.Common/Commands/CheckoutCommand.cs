@@ -14,11 +14,13 @@ namespace Customer.OrderCloud.Common.Commands
 {
     public interface ICheckoutCommand
     {
-        Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload);
-		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload);
-	    Task<PaymentWithXp> SetCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment payment);
+        Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCheckoutIEPayloadWithXp payload);
+		Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCheckoutIEPayloadWithXp payload);
+	    Task<PaymentWithXp> SetCreditCardPaymentAsync(string orderID, MeUserWithXp shopper, CreditCardPayment payment);
         Task<OrderConfirmation> SubmitOrderAsync(string orderID, DecodedToken shopperToken);
-        Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload);
+        Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCheckoutIEPayloadWithXp payload);
+        Task<OrderSubmitForApprovalResponseWithXp> ProcessOrderPostSubmitForApprovalAsync(OrderCheckoutIEPayloadWithXp payload);
+        Task<OrderApprovedResponseWithXp> ProcessOrderPostApprovalAsync(OrderCheckoutIEPayloadWithXp payload);
     }
 
     public class CheckoutCommand : ICheckoutCommand
@@ -46,7 +48,7 @@ namespace Customer.OrderCloud.Common.Commands
             _creditCardCommand = creditCardCommand;
         }
 
-        public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCalculatePayloadWithXp payload)
+        public async Task<ShipEstimateResponseWithXp> EstimateShippingCostsAsync(OrderCheckoutIEPayloadWithXp payload)
         {
             var shipments = ContainerizeLineItems(payload);
             var packages = shipments.Select(shipment => shipment.ShipPackage).ToList();
@@ -78,12 +80,12 @@ namespace Customer.OrderCloud.Common.Commands
             return response;
 	    }
 
-	    private List<ShippingPackageWithLineItems> ContainerizeLineItems(OrderCalculatePayloadWithXp payload)
+	    private List<ShippingPackageWithLineItems> ContainerizeLineItems(OrderCheckoutIEPayloadWithXp payload)
 	    {
             return null;
 	    }
 
-        public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCalculatePayloadWithXp payload)
+        public async Task<OrderCalculateResponseWithXp> RecalculatePricesAndTaxAsync(OrderCheckoutIEPayloadWithXp payload)
 		{
             var summary = MapOrderToTaxSummary(payload);
             var tax = await _taxCalculator.CalculateEstimateAsync(summary);
@@ -98,7 +100,7 @@ namespace Customer.OrderCloud.Common.Commands
             return response;
         }
 
-        private OrderSummaryForTax MapOrderToTaxSummary(OrderCalculatePayloadWithXp payload)
+        private OrderSummaryForTax MapOrderToTaxSummary(OrderCheckoutIEPayloadWithXp payload)
         {
             var taxDetails = new OrderSummaryForTax()
             {
@@ -136,7 +138,7 @@ namespace Customer.OrderCloud.Common.Commands
             return taxDetails;
         }
 
-        public async Task<PaymentWithXp> SetCreditCardPaymentAsync(MeUserWithXp shopper, CreditCardPayment ccPayment)
+        public async Task<PaymentWithXp> SetCreditCardPaymentAsync(string orderID, MeUserWithXp shopper, CreditCardPayment ccPayment)
 		{            
 			PCISafeCardDetails safeCardDetails;
             if (ccPayment.CardDetails != null)
@@ -160,7 +162,7 @@ namespace Customer.OrderCloud.Common.Commands
 			}
 
 
-			var payments = (await _oc.Payments.ListAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID)).Items.ToList();
+			var payments = (await _oc.Payments.ListAsync<PaymentWithXp>(OrderDirection.All, orderID)).Items.ToList();
 			var existingCCPayment = payments.FirstOrDefault(IsCreditCardPayment);
             if (existingCCPayment == null)
 			{
@@ -174,7 +176,7 @@ namespace Customer.OrderCloud.Common.Commands
                         SafeCardDetails = safeCardDetails
                     }
                 };
-                return await _oc.Payments.CreateAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, payment);
+                return await _oc.Payments.CreateAsync<PaymentWithXp>(OrderDirection.All, orderID, payment);
             } else
 			{
                 var payment = new PartialPayment()
@@ -186,7 +188,7 @@ namespace Customer.OrderCloud.Common.Commands
                         SafeCardDetails = safeCardDetails
                     }
                 };
-                return await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, ccPayment.OrderID, existingCCPayment.ID, payment);
+                return await _oc.Payments.PatchAsync<PaymentWithXp>(OrderDirection.All, orderID, existingCCPayment.ID, payment);
             }
 		}
 
@@ -275,7 +277,25 @@ namespace Customer.OrderCloud.Common.Commands
             return inactiveLineItems;
 		}
 
-		public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCalculatePayloadWithXp payload)
+		public async Task<OrderSubmitForApprovalResponseWithXp> ProcessOrderPostSubmitForApprovalAsync(OrderCheckoutIEPayloadWithXp payload)
+		{
+            return new OrderSubmitForApprovalResponseWithXp()
+            {
+                Succeeded = true,
+                HttpStatusCode = 200,
+                UnhandledErrorBody = null,
+                xp = new OrderSubmitResponseXp()
+                {
+                    ProcessResults = new List<PostSubmitProcessResult> { new PostSubmitProcessResult()
+                    {
+                        Success = true,
+                        Description = "No integration actions need to be taken when a order status changes from Unsubmitted to NeedsApproval"
+                    }} 
+                },
+            };
+        }
+
+        public async Task<OrderSubmitResponseWithXp> ProcessOrderPostSubmitAsync(OrderCheckoutIEPayloadWithXp payload)
 		{
 			var processes = new PostSubmitProcesses();
 
@@ -293,12 +313,26 @@ namespace Customer.OrderCloud.Common.Commands
 
             return new OrderSubmitResponseWithXp()
             {
+                Succeeded = !anyErrors,
                 HttpStatusCode = anyErrors ? 500 : 200,
+                UnhandledErrorBody = null,
                 xp = new OrderSubmitResponseXp()
                 {
                     ProcessResults = processes.Results
-                }
+                },
             };
         }
-	}
+
+        public async Task<OrderApprovedResponseWithXp> ProcessOrderPostApprovalAsync(OrderCheckoutIEPayloadWithXp payload)
+        {
+            var result = await ProcessOrderPostSubmitAsync(payload);
+            return new OrderApprovedResponseWithXp()
+            {
+                Succeeded = result.Succeeded,
+                HttpStatusCode = result.HttpStatusCode,
+                UnhandledErrorBody = result.UnhandledErrorBody,
+                xp = result.xp
+            };
+        }
+    }
 }
