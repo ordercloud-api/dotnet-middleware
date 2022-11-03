@@ -67,7 +67,7 @@ namespace Customer.OrderCloud.Api
 				.AddSingleton<ICreditCardSaver>(stripeService)
 				.AddSwaggerGen(c =>
 				 {
-					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalyst Test API", Version = "v1" });
+					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrderCloud Middleware API", Version = "v1" });
 				 });
 		}
 
@@ -87,7 +87,7 @@ namespace Customer.OrderCloud.Api
 			app.UseSwagger();
 			app.UseSwaggerUI(c =>
 			{
-				c.SwaggerEndpoint($"/swagger/v1/swagger.json", $"Catalyst Test API v1");
+				c.SwaggerEndpoint($"/swagger/v1/swagger.json", $"OrderCloud Middleware API v1");
 				c.RoutePrefix = string.Empty;
 			});
 		}

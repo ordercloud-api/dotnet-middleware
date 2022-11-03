@@ -1,4 +1,5 @@
 ﻿using Customer.OrderCloud.Common.Models;
+using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 using System;
 using System.Collections.Generic;
