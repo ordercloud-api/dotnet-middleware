@@ -10,6 +10,38 @@ namespace Customer.OrderCloud.Common.Models.MessageSenders
 	/// <summary>
 	/// Used for message sender types OrderSubmitted, OrderSubmittedForApproval, OrderApproved, OrderDeclined, OrderSubmittedForYourApproval, OrderSubmittedForYourApprovalHasBeenApproved, and OrderSubmittedForYourApprovalHasBeenDeclined.
 	/// </summary>
+	public class OrderMessageSenderPayload : MessageSenderPayload
+	{
+		public OrderMessageSenderEventBody EventBody { get; set; }
+	}
+
+	/// <summary>
+	/// Used for message sender types OrderSubmitted, OrderSubmittedForApproval, OrderApproved, OrderDeclined, OrderSubmittedForYourApproval, OrderSubmittedForYourApprovalHasBeenApproved, and OrderSubmittedForYourApprovalHasBeenDeclined.
+	/// </summary>
+	public class OrderMessageSenderEventBody
+	{
+		/// <summary>
+		/// The order that was submitted
+		/// </summary>
+		public Order Order { get; set; }
+		/// <summary>
+		/// The array of order approvals for the order
+		/// </summary>
+		public List<OrderApproval> Approvals { get; set; }
+		/// <summary>
+		/// The array of line items for the orders
+		/// </summary>
+		public List<LineItem> LineItems { get; set; }
+		/// <summary>
+		/// The array of products for the order
+		/// </summary>
+		public List<Product> Products { get; set; }
+	}
+
+
+	/// <summary>
+	/// Used for message sender types OrderSubmitted, OrderSubmittedForApproval, OrderApproved, OrderDeclined, OrderSubmittedForYourApproval, OrderSubmittedForYourApprovalHasBeenApproved, and OrderSubmittedForYourApprovalHasBeenDeclined.
+	/// </summary>
 	public class OrderMessageSenderPayload<TMessageSenderXp, TUser, TOrder, TOrderApproval, TLineItem, TProduct> : MessageSenderPayload<TMessageSenderXp, TUser>
 		where TUser: User
 		where TOrder : Order
@@ -23,7 +55,7 @@ namespace Customer.OrderCloud.Common.Models.MessageSenders
 	/// <summary>
 	/// Used for message sender types OrderSubmitted, OrderSubmittedForApproval, OrderApproved, OrderDeclined, OrderSubmittedForYourApproval, OrderSubmittedForYourApprovalHasBeenApproved, and OrderSubmittedForYourApprovalHasBeenDeclined.
 	/// </summary>
-	public class OrderMessageSenderEventBody<TOrder, TOrderApproval, TLineItem, TProduct>
+	public class OrderMessageSenderEventBody<TOrder, TOrderApproval, TLineItem, TProduct> : OrderMessageSenderEventBody
 		where TOrder : Order
 		where TOrderApproval : OrderApproval
 		where TLineItem : LineItem
@@ -32,19 +64,19 @@ namespace Customer.OrderCloud.Common.Models.MessageSenders
 		/// <summary>
 		/// The order that was submitted
 		/// </summary>
-		public TOrder Order { get; set; }
+		public new TOrder Order { get; set; }
 		/// <summary>
 		/// The array of order approvals for the order
 		/// </summary>
-		public List<TOrderApproval> Approvals { get; set;}
+		public new List<TOrderApproval> Approvals { get; set;}
 		/// <summary>
 		/// The array of line items for the orders
 		/// </summary>
-		public List<TLineItem> LineItems { get; set; }
+		public new List<TLineItem> LineItems { get; set; }
 		/// <summary>
 		/// The array of products for the order
 		/// </summary>
-		public List<TProduct> Products { get; set; }
+		public new List<TProduct> Products { get; set; }
 	}
 
 }

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Customer.OrderCloud.Common.Models.MessageSenders
 {
-    public abstract class MessageSenderPayload<TMessageSenderXp, TUser>
-        where TUser: User
+    public abstract class MessageSenderPayload
 	{
         /// <summary>
         /// Null if user is not a Buyer
@@ -37,12 +36,27 @@ namespace Customer.OrderCloud.Common.Models.MessageSenders
         /// <summary>
         /// The full user object of the recipient user
         /// </summary>
-        public TUser Recipient { get; set; }
+        public User Recipient { get; set; }
 
         /// <summary>
         /// The specific event body for that message type
         /// </summary>
-        public TMessageSenderXp ConfigData { get; set; }
+        public dynamic ConfigData { get; set; }
+    }
+
+    public abstract class MessageSenderPayload<TMessageSenderXp, TUser> : MessageSenderPayload
+        where TUser: User
+	{
+        
+        /// <summary>
+        /// The full user object of the recipient user
+        /// </summary>
+        public new TUser Recipient { get; set; }
+
+        /// <summary>
+        /// The specific event body for that message type
+        /// </summary>
+        public new TMessageSenderXp ConfigData { get; set; }
     }
 
 

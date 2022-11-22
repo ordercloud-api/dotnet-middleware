@@ -10,6 +10,14 @@ namespace Customer.OrderCloud.Common.Models.MessageSenders
     /// <summary>
     /// Used for message sender types ForgottenPassword and NewUserInvitation
     /// </summary>
+    public class SetPasswordMessageSenderPayload : MessageSenderPayload
+    {
+        public SetPasswordMessageSenderEventBody EventBody { get; set; }
+    }
+
+    /// <summary>
+    /// Used for message sender types ForgottenPassword and NewUserInvitation
+    /// </summary>
     public class SetPasswordMessageSenderPayload<TMessageSenderXp, TUser> : MessageSenderPayload<TMessageSenderXp, TUser>
         where TUser: User
     {

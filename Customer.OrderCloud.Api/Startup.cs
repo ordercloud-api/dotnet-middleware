@@ -65,7 +65,7 @@ namespace Customer.OrderCloud.Api
 				.AddSingleton<ITaxCalculator>(new AvalaraService(_settings.AvalaraSettings))
 				.AddSingleton<ICreditCardProcessor>(stripeService)
 				.AddSingleton<ICreditCardSaver>(stripeService)
-				.AddSingleton<ISendEmailCommand, SendEmailCommand>()
+				.AddSingleton<ISendEmailMapperCommand, SendEmailMapperCommand>()
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrderCloud Middleware API", Version = "v1" });
