@@ -1,4 +1,5 @@
 ﻿using Customer.OrderCloud.Common.Models;
+using OrderCloud.Catalyst;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,18 @@ namespace Customer.OrderCloud.Common.Commands
 
 	public class SendEmailCommand : ISendEmailCommand
 	{
+		private readonly ISingleEmailSender _sender;
+
+		public SendEmailCommand(ISingleEmailSender sender)
+		{
+			_sender = sender;
+		}
+
+		private async Task SendEmail(EmailMessage message)
+		{
+			await _sender.SendSingleEmailAsync(message);
+		}
+
 		public async Task NewUserInvitation(SetPasswordMessageSenderPayloadWithXp payload)
 		{
 

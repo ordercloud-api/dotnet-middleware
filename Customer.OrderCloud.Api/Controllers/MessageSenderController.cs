@@ -6,6 +6,15 @@ using Customer.OrderCloud.Common.Commands;
 
 namespace Customer.OrderCloud.Api.Controllers
 {
+	//    **************************************************************************************
+	//    All routes are hit from special OrderCloud webhooks called "Message Senders".
+	//    Create a Message sender config object in OrderCloud. https://ordercloud.io/api-reference/seller/message-senders/create
+	//    Set MessageSender.SharedKey to match settings.OrderCloudSettings.WebhookHashKey in this project
+	//    Set MessageSender.Url to "$baseUrl$/api/messagesender/{messagetype}" (include bracket literal characters) to match routes in this file
+	//    Set MessageSender.MessageTypes to the types you want to use (routes below)
+	//    Set MessageSender.xp to any json data you want included in the payload.ConfigData property for all routes 	
+	//    See guide on message senders https://ordercloud.io/knowledge-base/message-senders
+	//    **************************************************************************************
 	[Route("api/messagesender")]
 	public class MessageSenderController : CatalystController
 	{
@@ -121,6 +130,5 @@ namespace Customer.OrderCloud.Api.Controllers
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
 		public async Task OrderReturnCompleted(OrderReturnMessageSenderPayloadWithXp payload)
 			=> await _command.OrderReturnCompleted(payload);
-
 	}
 }
