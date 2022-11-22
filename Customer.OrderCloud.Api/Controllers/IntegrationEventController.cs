@@ -9,12 +9,12 @@ namespace Customer.OrderCloud.Api.Controllers
 	//    **************************************************************************************
 	//    All routes are hit from special OrderCloud webhooks called "Integration Events".
 	//    Create an IntegrationEvent config object in OrderCloud for each event type (AddToCart, OrderCheckout, OrderReturn, OpenIdConnect) you wish to use.
-	//    See https://ordercloud.io/api-reference/authentication-and-authorization/open-id-connects/create
+	//    See https://ordercloud.io/api-reference/seller/integration-events/create
 	//    For all config objects, set IntegrationEvent.HashKey to match match settings.OrderCloudSettings.WebhookHashKey.
 	//    **************************************************************************************
 
 	[Route("api/integrationevents")]
-	public class IntegrationEventController
+	public class IntegrationEventController : CatalystController
 	{
 		private readonly IAddToCartEventCommand _addToCartCommand;
 		private readonly IOpenIdConnectCommand _openIdConnectCommand;

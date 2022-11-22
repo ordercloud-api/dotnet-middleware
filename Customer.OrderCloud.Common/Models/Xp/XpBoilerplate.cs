@@ -1,4 +1,5 @@
-﻿using OrderCloud.Catalyst;
+﻿using Customer.OrderCloud.Common.Models.MessageSenders;
+using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 
 namespace Customer.OrderCloud.Common.Models
@@ -8,7 +9,7 @@ namespace Customer.OrderCloud.Common.Models
 	//    *  
 	//    *  Stores boilerplate code for wiring up strongly typed xp. Keeps it out of sight.
 	//    *  Under most OrderCloud marketplace set-ups, these XP patterns should work unchanged.
-	//    *  
+	//    *
 	//    **************************************************************************************
 
 
@@ -84,6 +85,10 @@ namespace Customer.OrderCloud.Common.Models
 	public class OpenIDConnectIEPayloadWithXp : OpenIDConnectIEPayload<IntegrationEventConfigData, UserWithXp> { }
 	public class OrderReturnIEPayloadWithXp : OrderReturnIEPayload<OrderReturnWithXp, OrderWorksheetWithXp> { }
 	public class AddToCartResponseWithXp : AddToCartResponse<AdHocProductWithXp> { }
+	public class OrderMessageSenderPayloadWithXp : OrderMessageSenderPayload<MessageSenderXp, UserWithXp, OrderWithXp, OrderApprovalWithXp, LineItemWithXp, ProductWithXp> { }
+	public class OrderReturnMessageSenderPayloadWithXp : OrderReturnMessageSenderPayload<MessageSenderXp, UserWithXp, OrderWithXp, OrderApprovalWithXp, LineItemWithXp, ProductWithXp, OrderReturnWithXp> { }
+	public class SetPasswordMessageSenderPayloadWithXp: SetPasswordMessageSenderPayload<MessageSenderXp, UserWithXp> { }
+	public class ShipmentCreatedMessageSenderPayloadWithXp : ShipmentCreatedMessageSenderPayload<MessageSenderXp, UserWithXp, OrderWithXp, OrderApprovalWithXp, LineItemWithXp, ProductWithXp, ShipmentWithXp, ShipmentItemWithXp> { }
 	#endregion
 
 
@@ -134,6 +139,4 @@ namespace Customer.OrderCloud.Common.Models
 	public partial class CostCenterXp { }
 	public partial class OrderSubmitResponseXp { }
 	#endregion
-
-
 }
