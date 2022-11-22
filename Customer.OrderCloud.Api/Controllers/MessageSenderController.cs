@@ -19,14 +19,14 @@ namespace Customer.OrderCloud.Api.Controllers
 
 		[HttpPost, Route("NewUserInvitation")]
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task NewUserInvitation(SetPasswordMessageSenderPayload payload)
+		public async Task NewUserInvitation(SetPasswordMessageSenderPayloadWithXp payload)
 		{
 
 		}
 
 		[HttpPost, Route("ForgottenPassword")]
 		[OrderCloudWebhookAuth] // Security feature to verifiy request came from Ordercloud.
-		public async Task ForgottenPassword(SetPasswordMessageSenderPayload payload)
+		public async Task ForgottenPassword(SetPasswordMessageSenderPayloadWithXp payload)
 		{
 
 		}
