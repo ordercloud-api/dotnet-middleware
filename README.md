@@ -46,3 +46,7 @@ Learn how to forward orders captured in ordercloud to a downstream system that h
 
 Learn how to wrap an Ordercloud endpoint in your own hosted API to perform logic in a secure environment. 
 
+### [Custom Message Senders](./Customer.OrderCloud.Api/Controllers/MessageSenderController.cs)
+
+Learn how to notify users of important events with custom emails.
+
