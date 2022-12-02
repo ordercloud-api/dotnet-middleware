@@ -166,7 +166,7 @@ namespace Customer.OrderCloud.Common.Commands
 			// multiple recipients, on a single thread or separate
 			// template data by recipients
 			// attachments
-			var message = EmailBuiler.BuildTemplateEmail(to, config.FromEmail, config.Subject, config.TemplateName, templateData);
+			var message = EmailBuilder.BuildTemplateEmail(to, config.FromEmail, config.Subject, config.TemplateName, templateData);
 			await _sender.SendSingleEmailAsync(message);
 
 			// TODO - drop onto a queue for async processing
