@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Customer.OrderCloud.Common.Models.Xp;
-using Customer.OrderCloud.Common.Models.MessageSenders;
 
 namespace Customer.OrderCloud.Common.Commands
 {
-	public interface ISendEmailMapperCommand
+	public interface ISendEmailCommand
 	{
 		Task SendSetPasswordEmail(SetPasswordMessageSenderPayloadWithXp payload);
 		Task SendOrderEmail(OrderMessageSenderPayloadWithXp payload);
@@ -19,11 +17,11 @@ namespace Customer.OrderCloud.Common.Commands
 		Task SendOrderReturnEmail(OrderReturnMessageSenderPayloadWithXp payload);
 	}
 
-	public class SendEmailMapperCommand : ISendEmailMapperCommand
+	public class SendEmailCommand : ISendEmailCommand
 	{
 		private readonly ISingleEmailSender _sender;
 
-		public SendEmailMapperCommand(ISingleEmailSender sender)
+		public SendEmailCommand(ISingleEmailSender sender)
 		{
 			_sender = sender;
 		}
@@ -33,12 +31,12 @@ namespace Customer.OrderCloud.Common.Commands
 		/// </summary>
 		public async Task SendSetPasswordEmail(SetPasswordMessageSenderPayloadWithXp payload)
 		{
-			var templateData = new
+			var templateData = new Dictionary<string, object>()
 			{
-				username = payload.EventBody.Username,
-				passwordtoken = payload.EventBody.PasswordRenewalAccessToken,
-				passwordverification = payload.EventBody.PasswordRenewalVerificationCode,
-				passwordrenewalurl = payload.EventBody.PasswordRenewalUrl
+				{ "username", payload.EventBody.Username },
+				{ "passwordtoken", payload.EventBody.PasswordRenewalAccessToken },
+				{ "passwordverification", payload.EventBody.PasswordRenewalVerificationCode },
+				{ "passwordrenewalurl", payload.EventBody.PasswordRenewalUrl }
 			};
 			await SendEmail(payload, templateData);
 		}
@@ -49,18 +47,18 @@ namespace Customer.OrderCloud.Common.Commands
 		/// </summary>
 		public async Task SendOrderEmail(OrderMessageSenderPayloadWithXp payload)
 		{
-			var templateData = new
+			var templateData = new Dictionary<string, object>()
 			{
-				firstname = payload.EventBody.Order.FromUser.FirstName,
-				lastname = payload.EventBody.Order.FromUser.LastName,
-				orderid = payload.EventBody.Order.ID,
-				datesubmitted = payload.EventBody.Order.DateSubmitted.ToString(),
-				subtotal = payload.EventBody.Order.Subtotal.ToString(),
-				tax = payload.EventBody.Order.TaxCost.ToString(),
-				shipping = payload.EventBody.Order.ShippingCost.ToString(),
-				total = payload.EventBody.Order.Total.ToString(),
-				lineitemcount = payload.EventBody.Order.LineItemCount.ToString(),
-				products = payload.EventBody.LineItems.Select(li =>
+				{ "firstname", payload.EventBody.Order.FromUser.FirstName },
+				{ "lastname", payload.EventBody.Order.FromUser.LastName },
+				{ "orderid", payload.EventBody.Order.ID },
+				{ "datesubmitted", payload.EventBody.Order.DateSubmitted.ToString() },
+				{ "subtotal", payload.EventBody.Order.Subtotal.ToString() },
+				{ "tax", payload.EventBody.Order.TaxCost.ToString() },
+				{ "shipping", payload.EventBody.Order.ShippingCost.ToString() },
+				{ "total", payload.EventBody.Order.Total.ToString() },
+				{ "lineitemcount", payload.EventBody.Order.LineItemCount.ToString() },
+				{ "products", payload.EventBody.LineItems.Select(li =>
 				{
 					return new
 					{
@@ -77,8 +75,8 @@ namespace Customer.OrderCloud.Common.Commands
 						shiptopostalcode = li.ShippingAddress.Zip,
 						shiptocountry = li.ShippingAddress.Country,
 					};
-				}),
-				approvals = payload.EventBody.Approvals.Select(ap =>
+				}) },
+				{ "approvals", payload.EventBody.Approvals.Select(ap =>
 				{
 					return new
 					{
@@ -93,7 +91,7 @@ namespace Customer.OrderCloud.Common.Commands
 						approverusername = ap.Approver.Username,
 						approverphone = ap.Approver.Phone
 					};
-				}),
+				})  }
 			};
 			await SendEmail(payload, templateData);
 		}
@@ -104,24 +102,24 @@ namespace Customer.OrderCloud.Common.Commands
 		/// </summary>
 		public async Task SendShipmentCreatedEmail(ShipmentCreatedMessageSenderPayloadWithXp payload)
 		{
-			var templateData = new
+			var templateData = new Dictionary<string, object>()
 			{
-				shipmentid = payload.EventBody.Shipment.ID,
-				shipmenttrackingnumber = payload.EventBody.Shipment.TrackingNumber,
-				shipper = payload.EventBody.Shipment.Shipper,
-				dateshipped = payload.EventBody.Shipment.DateShipped.ToString(),
-				toaddressid = payload.EventBody.Shipment.ToAddress.ID,
-				toaddresscompany = payload.EventBody.Shipment.ToAddress.CompanyName,
-				toaddressfirstname = payload.EventBody.Shipment.ToAddress.FirstName,
-				toaddresslastname = payload.EventBody.Shipment.ToAddress.LastName,
-				toaddressstreet1 = payload.EventBody.Shipment.ToAddress.Street1,
-				toaddressstreet2 = payload.EventBody.Shipment.ToAddress.Street2,
-				toaddresscity =	payload.EventBody.Shipment.ToAddress.City,
-				toaddressstate = payload.EventBody.Shipment.ToAddress.State,
-				toaddresscountry = payload.EventBody.Shipment.ToAddress.Country,
-				toaddresspostalcode = payload.EventBody.Shipment.ToAddress.Zip,
-				toaddressname = payload.EventBody.Shipment.ToAddress.AddressName,
-				shipmentitems = payload.EventBody.ShipmentItems.Select(shipmentItem =>
+				{ "shipmentid", payload.EventBody.Shipment.ID },
+				{ "shipmenttrackingnumber", payload.EventBody.Shipment.TrackingNumber },
+				{ "shipper", payload.EventBody.Shipment.Shipper },
+				{ "dateshipped", payload.EventBody.Shipment.DateShipped.ToString() },
+				{ "toaddressid", payload.EventBody.Shipment.ToAddress.ID },
+				{ "toaddresscompany", payload.EventBody.Shipment.ToAddress.CompanyName },
+				{ "toaddressfirstname", payload.EventBody.Shipment.ToAddress.FirstName },
+				{ "toaddresslastname", payload.EventBody.Shipment.ToAddress.LastName },
+				{ "toaddressstreet1", payload.EventBody.Shipment.ToAddress.Street1 },
+				{ "toaddressstreet2", payload.EventBody.Shipment.ToAddress.Street2 },
+				{ "toaddresscity", payload.EventBody.Shipment.ToAddress.City },
+				{ "toaddressstate", payload.EventBody.Shipment.ToAddress.State },
+				{ "toaddresscountry", payload.EventBody.Shipment.ToAddress.Country },
+				{ "toaddresspostalcode", payload.EventBody.Shipment.ToAddress.Zip },
+				{ "toaddressname", payload.EventBody.Shipment.ToAddress.AddressName },
+				{ "shipmentitems", payload.EventBody.ShipmentItems.Select(shipmentItem =>
 				{
 					var lineItem = payload.EventBody.LineItems.FirstOrDefault(li => li.ID == shipmentItem.LineItemID);
 					return new
@@ -132,7 +130,7 @@ namespace Customer.OrderCloud.Common.Commands
 						productid = shipmentItem.Product.ID,
 						productname = shipmentItem.Product.Name
 					};
-				})
+				})}
 			};
 			await SendEmail(payload, templateData);
 		}
@@ -142,11 +140,11 @@ namespace Customer.OrderCloud.Common.Commands
 		/// </summary>
 		public async Task SendOrderReturnEmail(OrderReturnMessageSenderPayloadWithXp payload)
 		{
-			var templateData = new
+			var templateData = new Dictionary<string, object>
 			{
-				orderreturnid = payload.EventBody.OrderReturn.ID,
-				refundamount = payload.EventBody.OrderReturn.RefundAmount,
-				returnitems = payload.EventBody.OrderReturn.ItemsToReturn.Select(item =>
+				{ "orderreturnid", payload.EventBody.OrderReturn.ID },
+				{ "refundamount", payload.EventBody.OrderReturn.RefundAmount },
+				{ "returnitems", payload.EventBody.OrderReturn.ItemsToReturn.Select(item =>
 				{
 					return new
 					{
@@ -154,25 +152,30 @@ namespace Customer.OrderCloud.Common.Commands
 						Quantity = item.Quantity,
 						RefundAmount = item.RefundAmount
 					};
-				})
+				})}
 			};
 			await SendEmail(payload, templateData);
 		}
 
-		private async Task SendEmail(MessageSenderPayload payload, object templateData)
+		private async Task SendEmail(MessageSenderPayload payload, Dictionary<string, object> templateData)
 		{
 			var to = payload.Recipient.Email;
 			var config = GetConfigForThisMessageType(payload);
-			// Email Builder supports many options.
-			var message = EmailBuilder.BuildTemplateEmail(to, config.FromEmail, config.Subject, config.TemplateName, templateData);
+			// EmailBuilder supports many variations of parameters for different functionality.
+			// templates or static string (html) content
+			// multiple recipients, on a single thread or separate
+			// template data by recipients
+			// attachments
+			var message = EmailBuiler.BuildTemplateEmail(to, config.FromEmail, config.Subject, config.TemplateName, templateData);
 			await _sender.SendSingleEmailAsync(message);
 
 			// TODO - drop onto a queue for async processing
 		}
 
-		private MessageTypeConfig GetConfigForThisMessageType(OrderReturnMessageSenderPayloadWithXp payload)
+		private MessageTypeConfig GetConfigForThisMessageType(MessageSenderPayload payload)
 		{
-			return (payload.ConfigData as Models.Xp.MessageSenderXp).MessageTypeConfig.FirstOrDefault(c => c.MessageType == payload.MessageType.ToString());
+			return (payload.ConfigData.MessageTypeConfig as List<MessageTypeConfig>)
+				.FirstOrDefault(c => c.MessageType == payload.MessageType.ToString());
 		}
 	}
 }

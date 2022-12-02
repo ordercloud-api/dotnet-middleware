@@ -18,9 +18,9 @@ namespace Customer.OrderCloud.Api.Controllers
 	[Route("api/messagesender")]
 	public class MessageSenderController : CatalystController
 	{
-		private readonly ISendEmailMapperCommand _command;
+		private readonly ISendEmailCommand _command;
 
-		public MessageSenderController(ISendEmailMapperCommand command)
+		public MessageSenderController(ISendEmailCommand command)
 		{
 			_command = command;
 		}

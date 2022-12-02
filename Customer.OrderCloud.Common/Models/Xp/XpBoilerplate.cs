@@ -1,5 +1,4 @@
-﻿using Customer.OrderCloud.Common.Models.MessageSenders;
-using OrderCloud.Catalyst;
+﻿using OrderCloud.Catalyst;
 using OrderCloud.SDK;
 
 namespace Customer.OrderCloud.Common.Models
