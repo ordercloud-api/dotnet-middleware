@@ -9,12 +9,12 @@ namespace Customer.OrderCloud.Api.Controllers
 	//    **************************************************************************************
 	//    All routes are hit from special OrderCloud webhooks called "Integration Events".
 	//    Create an IntegrationEvent config object in OrderCloud for each event type (AddToCart, OrderCheckout, OrderReturn, OpenIdConnect) you wish to use.
-	//    See https://ordercloud.io/api-reference/authentication-and-authorization/open-id-connects/create
+	//    See https://ordercloud.io/api-reference/seller/integration-events/create
 	//    For all config objects, set IntegrationEvent.HashKey to match match settings.OrderCloudSettings.WebhookHashKey.
 	//    **************************************************************************************
 
-	[Route("api/integrationevents")]
-	public class IntegrationEventController
+	[Route("api/integrationevent")]
+	public class IntegrationEventController : CatalystController
 	{
 		private readonly IAddToCartEventCommand _addToCartCommand;
 		private readonly IOpenIdConnectCommand _openIdConnectCommand;
@@ -36,7 +36,7 @@ namespace Customer.OrderCloud.Api.Controllers
 
 		//    **************************************************************************************
 		//    *  EventType - "AddToCard"
-		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevents/addtocart"
+		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevent/addtocart"
 		//    *  For integrating an external product catalog with ordercloud cart and fulfillment.
 		//    *  See https://ordercloud.io/knowledge-base/ad-hoc-products
 		//    **************************************************************************************
@@ -48,7 +48,7 @@ namespace Customer.OrderCloud.Api.Controllers
 
 		//    **************************************************************************************
 		//    *  EventType - "OpenIDConnect"
-		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevents/openidconnect"
+		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevent/openidconnect"
 		//    *  For single sign on integrations where users need to be synced into OrderCloud from an identity provider
 		//    *  See https://ordercloud.io/knowledge-base/sso-via-openid-connect
 		//    **************************************************************************************
@@ -65,7 +65,7 @@ namespace Customer.OrderCloud.Api.Controllers
 
 		//    **************************************************************************************
 		//    *  EventType - "OrderReturn"
-		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevents/orderreturn"
+		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevent/orderreturn"
 		//    *  For custom calculation of refund amounts on order returns
 		//    *  See https://ordercloud.io/knowledge-base/order-returns
 		//    **************************************************************************************
@@ -77,7 +77,7 @@ namespace Customer.OrderCloud.Api.Controllers
 
 		//    **************************************************************************************
 		//    *  EventType - "OrderCheckout"
-		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevents/ordercheckout"
+		//    *  CustomImplementationUrl - "{baseUrl}/api/integrationevent/ordercheckout"
 		//    *  For all checkout integrations like shipping, tax, payment, email confirmation, order forwarding 
 		//    *  See https://ordercloud.io/knowledge-base/order-checkout-integration
 		//    **************************************************************************************

@@ -1,4 +1,5 @@
-﻿using OrderCloud.Integrations.Payment.Stripe;
+﻿using OrderCloud.Integrations.Messaging.MailChimp;
+using OrderCloud.Integrations.Payment.Stripe;
 using OrderCloud.Integrations.Shipping.EasyPost;
 using OrderCloud.Integrations.Tax.Avalara;
 
@@ -12,6 +13,7 @@ namespace Catalyst.Common
 		public EasyPostConfig EasyPostSettings { get; set; } = new EasyPostConfig();
 		public AvalaraConfig AvalaraSettings { get; set; } = new AvalaraConfig();
 		public StripeConfig StripeSettings { get; set; } = new StripeConfig();
+		public MailChimpConfig MailChimpSettings { get; set; } = new MailChimpConfig();
 	}
 
 	public class ServiceBusSettings

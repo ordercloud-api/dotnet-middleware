@@ -14,6 +14,7 @@ using OrderCloud.Integrations.Shipping.EasyPost;
 using OrderCloud.Integrations.Tax.Avalara;
 using OrderCloud.Integrations.Payment.Stripe;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using OrderCloud.Integrations.Messaging.MailChimp;
 
 namespace Customer.OrderCloud.Api
 {
@@ -63,8 +64,10 @@ namespace Customer.OrderCloud.Api
 				.AddSingleton<ICreditCardCommand, CreditCardCommand>()
 				.AddSingleton<IShippingRatesCalculator>(new EasyPostService(_settings.EasyPostSettings))
 				.AddSingleton<ITaxCalculator>(new AvalaraService(_settings.AvalaraSettings))
+				.AddSingleton<ISingleEmailSender>(new MailChimpService(_settings.MailChimpSettings))
 				.AddSingleton<ICreditCardProcessor>(stripeService)
 				.AddSingleton<ICreditCardSaver>(stripeService)
+				.AddSingleton<ISendEmailCommand, SendEmailCommand>()
 				.AddSwaggerGen(c =>
 				 {
 					 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrderCloud Middleware API", Version = "v1" });
