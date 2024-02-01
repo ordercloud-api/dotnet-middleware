@@ -9,9 +9,9 @@ parameters:
   default: ''
 variables: 
   - name: SOLUTION_FILE_PATH
-    value: ./Catalyst.Examples.sln
+    value: ./Customer.OrderCloud.sln
   - name: API_PROJECT_NAME
-    value: Catalyst.Api.csproj
+    value: Customer.OrderCloud.Api.csproj
 jobs:
   - job: Build_MiddleWare
     pool:
