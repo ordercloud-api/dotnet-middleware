@@ -11,7 +11,7 @@ parameters:
   type: string
   default: 'middleware'
 - name: AppConfigConnection
-  type: string,
+  type: string
   default: ''
 variables: 
   - name: SOLUTION_FILE_PATH
