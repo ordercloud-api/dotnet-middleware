@@ -7,6 +7,12 @@ parameters:
 - name: AppServiceName
   type: string
   default: ''
+- name: ArtifactName
+  type: string
+  default: 'middleware'
+- name: AppConfigConnection
+  type: string,
+  default: ''
 variables: 
   - name: SOLUTION_FILE_PATH
     value: ./Customer.OrderCloud.sln
@@ -42,6 +48,8 @@ jobs:
         displayName: Build solution $(SOLUTION_FILE_PATH)
         inputs:
           solution: $(SOLUTION_FILE_PATH)
+          script: |
+            SET APP_CONFIG_CONNECTION=$(AppConfigConnection)
       - task: VSTest@2
         displayName: Run C# Unit tests
         inputs:
@@ -64,5 +72,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact: Middleware"
         inputs:
-          PathtoPublish: middleware
-          ArtifactName: middleware
+          PathtoPublish: $(ArtifactName)
+          ArtifactName: $(ArtifactName)
