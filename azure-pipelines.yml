@@ -7,9 +7,6 @@ parameters:
 - name: AppServiceName
   type: string
   default: ''
-- name: ArtifactName
-  type: string
-  default: 'middleware'
 - name: AppConfigConnection
   type: string
   default: ''
@@ -72,5 +69,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact: Middleware"
         inputs:
-          PathtoPublish: $(ArtifactName)
-          ArtifactName: $(ArtifactName)
+          PathtoPublish: middleware
+          ArtifactName: middleware
