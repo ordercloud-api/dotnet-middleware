@@ -3,18 +3,13 @@ resources:
     - repository: self
       type: git
       ref: dev
-parameters:
-- name: AppServiceName
-  type: string
-  default: ''
-- name: AppConfigConnection
-  type: string
-  default: ''
 variables: 
+  - name: APP_SERVICE_NAME
+    value: put-your-name-here
   - name: SOLUTION_FILE_PATH
-    value: ./Customer.OrderCloud.sln
+    value: ./Catalyst.Examples.sln
   - name: API_PROJECT_NAME
-    value: Customer.OrderCloud.Api.csproj
+    value: Catalyst.Api.csproj
 jobs:
   - job: Build_MiddleWare
     pool:
@@ -30,7 +25,7 @@ jobs:
             try {
                 # call out to hosted endpoint to get the current version and add one for this build
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                $response = Invoke-RestMethod -Uri "https://$(AppServiceName).azurewebsites.net/api/env"
+                $response = Invoke-RestMethod -Uri "https://$(APP_SERVICE_NAME).azurewebsites.net/api/env"
                 $newversion = [int]$response.BuildNumber.Split(".")[2] + 1
             Write-Host "##vso[build.updatebuildnumber]1.0.$newversion.$(Build.BuildId)"
             } catch {
@@ -45,8 +40,6 @@ jobs:
         displayName: Build solution $(SOLUTION_FILE_PATH)
         inputs:
           solution: $(SOLUTION_FILE_PATH)
-          script: |
-            SET APP_CONFIG_CONNECTION=$(AppConfigConnection)
       - task: VSTest@2
         displayName: Run C# Unit tests
         inputs:
